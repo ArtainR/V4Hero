@@ -36,7 +36,7 @@ void SaveFileCreatedMenuButtonList::SelectButton(int index)
             svCrtMnu->nameEntryMenu->Hide();
 
             currentController->Initialise(*config, config->GetString("mission1Background"), *parentMenu->v4Core);
-            currentController->StartMission(config->GetString("mission1Theme"), 1, 1);
+            currentController->StartMission(config->GetString("mission1Theme"), "resources/missions/", true, 1);
 
             break;
     }
