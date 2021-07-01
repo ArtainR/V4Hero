@@ -124,8 +124,8 @@ V4Core::V4Core()
     menus.push_back(&mainMenu);
     config.configDebugID = 10;
 
-	// Initialize ModRegistry (this has to be done here for later ability to enable / disable mods)
-	modReg.init(&config);
+    // Initialize ModRegistry (this has to be done here for later ability to enable / disable mods)
+    modReg.init(&config);
 }
 
 void V4Core::saveToDebugLog(string data)

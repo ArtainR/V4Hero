@@ -153,7 +153,7 @@ public:
 
     bool obelisk = false;
     bool mission_started = false;
-    
+
     void initialise(Config* thisConfig, V4Core* v4Core, Menu* curParentMenu);
     void update(sf::RenderWindow& window, float fps, InputController& inputCtrl);
     void updateInputControls();

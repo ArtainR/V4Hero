@@ -1511,7 +1511,7 @@ void PatapolisMenu::Update(sf::RenderWindow& window, float fps, InputController&
                         barracks_menu.obelisk = true;
                         barracks_menu.mission_id = obelisk_menu.missions[obelisk_menu.sel_mission].mis_ID;
                         barracks_menu.mission_file = obelisk_menu.missions[obelisk_menu.sel_mission].mission_file;
-						barracks_menu.mission_path = obelisk_menu.missions[obelisk_menu.sel_mission].mission_path;
+                        barracks_menu.mission_path = obelisk_menu.missions[obelisk_menu.sel_mission].mission_path;
 
                         if (obelisk_menu.missions[obelisk_menu.sel_mission].hasLevels)
                             barracks_menu.mission_multiplier = 0.85 + thisConfig->thisCore->saveReader.mission_levels[obelisk_menu.missions[obelisk_menu.sel_mission].mis_ID] * 0.15;

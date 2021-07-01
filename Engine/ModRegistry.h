@@ -6,30 +6,29 @@
 
 class ModRegistry
 {
-	public:
-		struct Mod
-		{
-			std::string path;
-			std::string name;
-			std::string author;
-			std::string version;
-			nlohmann::json items;
-			nlohmann::json worldmap_data;
-		};
+public:
+    struct Mod {
+        std::string path;
+        std::string name;
+        std::string author;
+        std::string version;
+        nlohmann::json items;
+        nlohmann::json worldmap_data;
+    };
 
-		std::vector<Mod> mods;
+    std::vector<Mod> mods;
 
-		ModRegistry();
-		~ModRegistry();
-		void init(Config* thisConfig);
-		nlohmann::json addModMissions(nlohmann::json worldData);
+    ModRegistry();
+    ~ModRegistry();
+    void init(Config* thisConfig);
+    nlohmann::json addModMissions(nlohmann::json worldData);
 
-	private:
-		Config* config;
+private:
+    Config* config;
 
-		std::string modsPath;
+    std::string modsPath;
 
-		void loadMods();
+    void loadMods();
 };
 
 

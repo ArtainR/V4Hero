@@ -49,7 +49,7 @@ public:
     bool isInitialized = false;
     bool isFinishedLoading = false;
 
-	bool hasLevels = false;
+    bool hasLevels = false;
 
     sf::RectangleShape fade_box;
     float fade_alpha = 255;

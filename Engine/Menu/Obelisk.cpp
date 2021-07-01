@@ -3,10 +3,10 @@
 #include "ButtonList.h"
 #include "iostream"
 #include "math.h"
+#include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 #include <sstream>
 #include <string>
-#include <spdlog/spdlog.h>
-#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
@@ -18,39 +18,67 @@ ObeliskMenu::ObeliskMenu()
 void ObeliskMenu::addMission(json missiondata)
 {
     Mission tmp;
-	try { tmp.mis_ID = missiondata["mission_id"]; } catch(const std::exception& e) { tmp.mis_ID = 0; }
-	try { tmp.loc_ID = missiondata["location_id"]; } catch(const std::exception& e) { tmp.loc_ID = 1; }
-	try { tmp.hasLevels = missiondata["has_levels"]; } catch(const std::exception& e) { tmp.hasLevels = false; }
+    try
+    {
+        tmp.mis_ID = missiondata["mission_id"];
+    } catch (const std::exception& e)
+    {
+        tmp.mis_ID = 0;
+    }
+    try
+    {
+        tmp.loc_ID = missiondata["location_id"];
+    } catch (const std::exception& e)
+    {
+        tmp.loc_ID = 1;
+    }
+    try
+    {
+        tmp.hasLevels = missiondata["has_levels"];
+    } catch (const std::exception& e)
+    {
+        tmp.hasLevels = false;
+    }
 
-	try
-	{
-		std::string title_key = missiondata["mission_title"];
-		tmp.title = thisConfig->strRepo.GetUnicodeString(title_key);
-	}
-	catch(const std::exception& e)
-	{
-		std::string title = "No Data";
-		tmp.title = wstring(title.begin(), title.end());
-	}
-	try
-	{
-		std::string desc_key = missiondata["mission_description"];
-		tmp.desc = thisConfig->strRepo.GetUnicodeString(desc_key);
-	}
-	catch(const std::exception& e)
-	{
-		std::string desc = "No Data";
-		tmp.desc = wstring(desc.begin(), desc.end());
-	}
+    try
+    {
+        std::string title_key = missiondata["mission_title"];
+        tmp.title = thisConfig->strRepo.GetUnicodeString(title_key);
+    } catch (const std::exception& e)
+    {
+        std::string title = "No Data";
+        tmp.title = wstring(title.begin(), title.end());
+    }
+    try
+    {
+        std::string desc_key = missiondata["mission_description"];
+        tmp.desc = thisConfig->strRepo.GetUnicodeString(desc_key);
+    } catch (const std::exception& e)
+    {
+        std::string desc = "No Data";
+        tmp.desc = wstring(desc.begin(), desc.end());
+    }
 
-    try { tmp.mission_file = missiondata["mission_file"]; } catch(const std::exception& e) { tmp.mission_file = "mis1_1.p4m"; }
-	try { tmp.mission_path = missiondata["mission_path"]; } catch(const std::exception& e) { tmp.mission_path = "resources/missions/"; }
+    try
+    {
+        tmp.mission_file = missiondata["mission_file"];
+    } catch (const std::exception& e)
+    {
+        tmp.mission_file = "mis1_1.p4m";
+    }
+    try
+    {
+        tmp.mission_path = missiondata["mission_path"];
+    } catch (const std::exception& e)
+    {
+        tmp.mission_path = "resources/missions/";
+    }
 
     string level = "";
-	if(tmp.hasLevels)
-	{
-		level = to_string(thisConfig->thisCore->saveReader.mission_levels[tmp.mis_ID]);
-	}
+    if (tmp.hasLevels)
+    {
+        level = to_string(thisConfig->thisCore->saveReader.mission_levels[tmp.mis_ID]);
+    }
 
     PText tm;
     tm.createText(font, 18, sf::Color::Black, "", quality, 1);
@@ -430,27 +458,27 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
                 missions.clear();
 
                 ifstream wmap("resources/missions/worldmap.dat", std::ios::in);
-				json wmap_data;
+                json wmap_data;
 
-				//v4Core->modReader.addWorldmapData(wmap_data);
+                //v4Core->modReader.addWorldmapData(wmap_data);
 
-				if (wmap.good())
-				{
-					wmap >> wmap_data;
+                if (wmap.good())
+                {
+                    wmap >> wmap_data;
 
-					if(v4Core->modReg.mods.size() > 0)
-					{
-						spdlog::info("Adding mod missions");
-						wmap_data = v4Core->modReg.addModMissions(wmap_data);
-					}
+                    if (v4Core->modReg.mods.size() > 0)
+                    {
+                        spdlog::info("Adding mod missions");
+                        wmap_data = v4Core->modReg.addModMissions(wmap_data);
+                    }
 
-					for (const auto& missiondata : wmap_data)
-					{
-						if(missiondata["location_id"] == sel_location && v4Core->saveReader.isMissionUnlocked(missiondata["mission_id"]))
-						{
-							addMission(missiondata);
-						}
-					}
+                    for (const auto& missiondata : wmap_data)
+                    {
+                        if (missiondata["location_id"] == sel_location && v4Core->saveReader.isMissionUnlocked(missiondata["mission_id"]))
+                        {
+                            addMission(missiondata);
+                        }
+                    }
                 }
 
                 wmap.close();

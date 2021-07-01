@@ -210,7 +210,7 @@ void AnimatedObject::loadAnim(std::string data, P4A handle)
 
                             if (length > 0)
                             {
-                                vector<Object::Pixel> one_swap;            ///one frame swap
+                                vector<Object::Pixel> one_swap;                ///one frame swap
                                 vector<vector<Object::Pixel>> animation_swaps; ///one full animation
 
                                 //cout << "[PixelSwap] Reading file..." << endl;
@@ -1114,7 +1114,7 @@ void AnimatedObject::Draw(sf::RenderWindow& window)
             //cout << "[AnimatedObject::Draw] Object " << i << endl;
 
             if (qualitySetting != -1)
-            (*objects)[i].s_obj.qualitySetting = qualitySetting;
+                (*objects)[i].s_obj.qualitySetting = qualitySetting;
 
             (*objects)[i].g_x = global_x;
             (*objects)[i].g_y = global_y;
@@ -1225,4 +1225,6 @@ void AnimatedObject::Draw(sf::RenderWindow& window)
     lastFrame = curFrame;
 }
 
-void AnimatedObject::Update() {}
+void AnimatedObject::Update()
+{
+}

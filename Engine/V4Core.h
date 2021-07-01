@@ -12,9 +12,9 @@
 #include "Mission/Background.h"
 #include "Mission/Camera.h"
 #include "Mission/MissionController.h"
+#include "ModRegistry.h"
 #include "Rhythm/Rhythm.h"
 #include "SaveReader.h"
-#include "ModRegistry.h"
 #include "StringRepository.h"
 #include "TipsUtil.h"
 
@@ -48,7 +48,7 @@ public:
     TipsUtil tipsUtil;
     SaveReader saveReader;
     MissionController currentController;
-	ModRegistry modReg;
+    ModRegistry modReg;
     V4Core();
     void saveToDebugLog(string data);
     void changeRichPresence(string title, string bg_image, string sm_image);

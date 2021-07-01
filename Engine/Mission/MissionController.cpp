@@ -967,9 +967,9 @@ void MissionController::updateMissions()
     }
 
     if (v4Core->saveReader.mission_levels[curMissionID] != 0)
-	{
+    {
         v4Core->saveReader.mission_levels[curMissionID] += 1;
-	}
+    }
 }
 
 void MissionController::addUnitThumb(int unit_class)
@@ -1273,7 +1273,7 @@ void MissionController::StartMission(std::string missionFile, std::string missio
     elist.close();
 
     ifstream mf(missionPath + missionFile);
-	spdlog::info("Attempting to read a mission from: {}", missionPath + missionFile);
+    spdlog::info("Attempting to read a mission from: {}", missionPath + missionFile);
 
     bool accepted = false;
     float ver = 0.0;
