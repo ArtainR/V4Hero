@@ -1511,8 +1511,9 @@ void PatapolisMenu::Update(sf::RenderWindow& window, float fps, InputController&
                         barracks_menu.obelisk = true;
                         barracks_menu.mission_id = obelisk_menu.missions[obelisk_menu.sel_mission].mis_ID;
                         barracks_menu.mission_file = obelisk_menu.missions[obelisk_menu.sel_mission].mission_file;
+						barracks_menu.mission_path = obelisk_menu.missions[obelisk_menu.sel_mission].mission_path;
 
-                        if (thisConfig->thisCore->saveReader.mission_levels[obelisk_menu.missions[obelisk_menu.sel_mission].mis_ID] != 0)
+                        if (obelisk_menu.missions[obelisk_menu.sel_mission].hasLevels)
                             barracks_menu.mission_multiplier = 0.85 + thisConfig->thisCore->saveReader.mission_levels[obelisk_menu.missions[obelisk_menu.sel_mission].mis_ID] * 0.15;
                         else
                             barracks_menu.mission_multiplier = 1;
@@ -1534,7 +1535,7 @@ void PatapolisMenu::Update(sf::RenderWindow& window, float fps, InputController&
                         loadingThreadInstance.launch();
 
                         barracks_menu.currentController->Initialise(*thisConfig, thisConfig->GetString("mission1Background"), *v4Core);
-                        barracks_menu.currentController->StartMission(barracks_menu.mission_file, 1, barracks_menu.mission_id, barracks_menu.mission_multiplier);
+                        barracks_menu.currentController->StartMission(barracks_menu.mission_file, barracks_menu.mission_path, 1, barracks_menu.mission_id, barracks_menu.mission_multiplier);
                         barracks_menu.Hide();
                         barracks_menu.is_active = false;
 

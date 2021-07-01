@@ -66,7 +66,7 @@ void IntroductionMenu::Update(sf::RenderWindow& window, float fps, InputControll
         is_active = false;
 
         v4Core->currentController.Initialise(*thisConfig, thisConfig->GetString("mission1Background"), *v4Core);
-        v4Core->currentController.StartMission("mis1_0.p4m", false, 1);
+        v4Core->currentController.StartMission("mis1_0.p4m", "resources/missions/", false, 1);
     }
 }
 

@@ -5,42 +5,58 @@
 #include "math.h"
 #include <sstream>
 #include <string>
+#include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 ObeliskMenu::ObeliskMenu()
 {
     is_active = false;
 }
 
-void ObeliskMenu::addMission(string missiondata)
+void ObeliskMenu::addMission(json missiondata)
 {
-    vector<string> mission = Func::Split(missiondata, '|');
-
     Mission tmp;
-    tmp.mis_ID = atoi(mission[0].c_str());
-    tmp.loc_ID = atoi(mission[1].c_str());
+	try { tmp.mis_ID = missiondata["mission_id"]; } catch(const std::exception& e) { tmp.mis_ID = 0; }
+	try { tmp.loc_ID = missiondata["location_id"]; } catch(const std::exception& e) { tmp.loc_ID = 1; }
+	try { tmp.hasLevels = missiondata["has_levels"]; } catch(const std::exception& e) { tmp.hasLevels = false; }
 
-    wstring title_key = wstring(mission[2].begin(), mission[2].end());
-    wstring desc_key = wstring(mission[3].begin(), mission[3].end());
+	try
+	{
+		std::string title_key = missiondata["mission_title"];
+		tmp.title = thisConfig->strRepo.GetUnicodeString(title_key);
+	}
+	catch(const std::exception& e)
+	{
+		std::string title = "No Data";
+		tmp.title = wstring(title.begin(), title.end());
+	}
+	try
+	{
+		std::string desc_key = missiondata["mission_description"];
+		tmp.desc = thisConfig->strRepo.GetUnicodeString(desc_key);
+	}
+	catch(const std::exception& e)
+	{
+		std::string desc = "No Data";
+		tmp.desc = wstring(desc.begin(), desc.end());
+	}
 
-    tmp.title = thisConfig->strRepo.GetUnicodeString(title_key);
-    tmp.desc = thisConfig->strRepo.GetUnicodeString(desc_key);
-
-    tmp.mission_file = mission[4];
+    try { tmp.mission_file = missiondata["mission_file"]; } catch(const std::exception& e) { tmp.mission_file = "mis1_1.p4m"; }
+	try { tmp.mission_path = missiondata["mission_path"]; } catch(const std::exception& e) { tmp.mission_path = "resources/missions/"; }
 
     string level = "";
-
-    if (thisConfig->thisCore->saveReader.mission_levels[tmp.mis_ID] != 0)
-    {
-        level = to_string(thisConfig->thisCore->saveReader.mission_levels[tmp.mis_ID]);
-    }
+	if(tmp.hasLevels)
+	{
+		level = to_string(thisConfig->thisCore->saveReader.mission_levels[tmp.mis_ID]);
+	}
 
     PText tm;
     tm.createText(font, 18, sf::Color::Black, "", quality, 1);
     tm.setString(Func::ConvertToUtf8String(tmp.title) + level);
     tm.setOrigin(tm.getLocalBounds().width / 2, tm.getLocalBounds().height / 2);
     tmp.p_mis = tm;
-
-    cout << "[WorldMap] Making text " << Func::ConvertToUtf8String(tmp.title).toAnsiString() << " " << endl;
 
     missions.push_back(tmp);
 }
@@ -413,31 +429,28 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
 
                 missions.clear();
 
-                ifstream wmap("resources/missions/worldmap.dat");
-                string buff;
+                ifstream wmap("resources/missions/worldmap.dat", std::ios::in);
+				json wmap_data;
 
-                while (getline(wmap, buff))
-                {
-                    if (buff.back() == '\r')
-                    {
-                        buff.pop_back();
-                    }
-                    cout << "[WorldMap] Read: " << buff << endl;
+				//v4Core->modReader.addWorldmapData(wmap_data);
 
-                    if (buff.find("#") == std::string::npos)
-                    {
-                        vector<string> mission = Func::Split(buff, '|');
+				if (wmap.good())
+				{
+					wmap >> wmap_data;
 
-                        cout << "[WorldMap] Checking " << atoi(mission[1].c_str()) << " vs " << sel_location << endl;
-                        if (atoi(mission[1].c_str()) == sel_location)
-                        {
-                            if (std::find(missions_unlocked.begin(), missions_unlocked.end(), atoi(mission[0].c_str())) != missions_unlocked.end())
-                            {
-                                cout << "Mission in location " << sel_location << " detected with ID " << mission[0] << endl;
-                                addMission(buff);
-                            }
-                        }
-                    }
+					if(v4Core->modReg.mods.size() > 0)
+					{
+						spdlog::info("Adding mod missions");
+						wmap_data = v4Core->modReg.addModMissions(wmap_data);
+					}
+
+					for (const auto& missiondata : wmap_data)
+					{
+						if(missiondata["location_id"] == sel_location && v4Core->saveReader.isMissionUnlocked(missiondata["mission_id"]))
+						{
+							addMission(missiondata);
+						}
+					}
                 }
 
                 wmap.close();
@@ -450,7 +463,7 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
 
                     string level = "";
 
-                    if (thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID] != 0)
+                    if (missions[sel_mission].hasLevels)
                     {
                         level = to_string(thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID]);
                     }
@@ -628,7 +641,7 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
 
                 string level = "";
 
-                if (thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID] != 0)
+                if (missions[sel_mission].hasLevels)
                 {
                     level = to_string(thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID]);
                 }
@@ -648,7 +661,7 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
 
                 string level = "";
 
-                if (thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID] != 0)
+                if (missions[sel_mission].hasLevels)
                 {
                     level = to_string(thisConfig->thisCore->saveReader.mission_levels[missions[sel_mission].mis_ID]);
                 }
