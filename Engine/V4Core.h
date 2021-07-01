@@ -14,6 +14,7 @@
 #include "Mission/MissionController.h"
 #include "Rhythm/Rhythm.h"
 #include "SaveReader.h"
+#include "ModRegistry.h"
 #include "StringRepository.h"
 #include "TipsUtil.h"
 
@@ -35,7 +36,7 @@ private:
 
 public:
     bool left_key = false, right_key = false, up_key = false, down_key = false;
-    std::string hero_version = PATAFOUR_VERSION;
+    std::string hero_version = "1.2";
     sf::RenderWindow window;
 
     std::mt19937::result_type seed;
@@ -47,6 +48,7 @@ public:
     TipsUtil tipsUtil;
     SaveReader saveReader;
     MissionController currentController;
+	ModRegistry modReg;
     V4Core();
     void saveToDebugLog(string data);
     void changeRichPresence(string title, string bg_image, string sm_image);
