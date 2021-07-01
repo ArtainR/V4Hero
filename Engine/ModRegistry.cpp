@@ -33,7 +33,6 @@ void ModRegistry::init(Config* thisConfig)
 {
     config = thisConfig;
 
-    //modsPath = std::filesystem::current_path().string() + config->GetString("modsPath");
     modsPath = std::filesystem::current_path().string() + "/mods";
     spdlog::info("Mods path: {}", modsPath);
 
