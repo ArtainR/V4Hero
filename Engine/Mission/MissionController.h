@@ -49,6 +49,8 @@ public:
     bool isInitialized = false;
     bool isFinishedLoading = false;
 
+	bool hasLevels = false;
+
     sf::RectangleShape fade_box;
     float fade_alpha = 255;
 
@@ -246,8 +248,8 @@ public:
     int layerStr2Enum(string layer);
 
     /** Collisions **/
-    static bool DoCollisionStepInAxis(float currentAxisAngle, HitboxFrame* currentHitboxFrame, AnimatedObject* targetObject, HitboxFrame* currentObjectHitBoxFrame, float currentObjectX, float CurrentObjectY) ;
-    static vector<MissionController::CollisionEvent> DoCollisions(HitboxFrame* currentObjectHitBoxFrame, float currentObjectX, float currentObjectY, int collisionObjectID, vector<CollidableObject*> collisionObjects, vector<string> collisionData = {}) ;
+    static bool DoCollisionStepInAxis(float currentAxisAngle, HitboxFrame* currentHitboxFrame, AnimatedObject* targetObject, HitboxFrame* currentObjectHitBoxFrame, float currentObjectX, float CurrentObjectY);
+    static vector<MissionController::CollisionEvent> DoCollisions(HitboxFrame* currentObjectHitBoxFrame, float currentObjectX, float currentObjectY, int collisionObjectID, vector<CollidableObject*> collisionObjects, vector<string> collisionData = {});
     float pataponMaxProjection(float axisAngle, int id);
     float pataponMinProjection(float axisAngle, int id);
 
@@ -276,7 +278,7 @@ public:
 
     /** Load up the mission **/
     void Initialise(Config& config, std::string backgroundName, V4Core& v4core_);
-    void StartMission(std::string missionFile, bool showCutscene = false, int missionID = 0, float mission_multiplier = 1);
+    void StartMission(std::string missionFile, std::string missionPath = "resources/missions/", bool showCutscene = false, int missionID = 0, float mission_multiplier = 1);
 
     /** Stop the mission **/
     void StopMission();
@@ -305,10 +307,11 @@ public:
 
     MissionController();
     ~MissionController();
+
 private:
     static bool isColliding(PlayableUnit* unit, const unique_ptr<Entity>& entity);
     static vector<CollisionEvent> computeCollisions(HitboxFrame* currentObjectHitBoxFrame, float currentObjectX, float currentObjectY, int collisionObjectID, vector<string>& collisionData, CollidableObject* collisionObject);
 };
 
 
-#endif // CAMERA_H
+#endif // MISSIONCONTROLLER_H

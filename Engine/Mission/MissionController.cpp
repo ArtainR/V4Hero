@@ -179,16 +179,16 @@ json parseLootArray(mt19937& gen, uniform_real_distribution<double>& roll, json 
             loot[i]["chance"] = total;
         } else
         {
-			spdlog::warn("Undefined behavior detected while parsing loot: {} | (Element of array is neither an array nor an object)", loot);
+            spdlog::warn("Undefined behavior detected while parsing loot: {} | (Element of array is neither an array nor an object)", loot);
         }
     }
 
     if (total < 100)
     {
-		spdlog::warn("Undefined behavior detected while parsing loot: {} | (Total chances in array less than 100)", loot);
+        spdlog::warn("Undefined behavior detected while parsing loot: {} | (Total chances in array less than 100)", loot);
     } else if (total > 100)
     {
-		spdlog::warn("Undefined behavior detected while parsing loot: {} | (Total chances in array more than 100)", loot);
+        spdlog::warn("Undefined behavior detected while parsing loot: {} | (Total chances in array more than 100)", loot);
     }
 
     float n = roll(gen);
@@ -210,7 +210,7 @@ json parseLootArray(mt19937& gen, uniform_real_distribution<double>& roll, json 
             }
         } else
         {
-			spdlog::warn("Undefined behavior detected while parsing loot: {} | (Element of array is neither an array nor an object)", loot);
+            spdlog::warn("Undefined behavior detected while parsing loot: {} | (Element of array is neither an array nor an object)", loot);
         }
     }
 }
@@ -737,7 +737,7 @@ void MissionController::spawnEntity(int id, bool collidable, bool attackable, in
             entity->setEntityID(id);
 
             entity->floorY = baseY; ///in case Y gets overriden, save the position where the floor is
-			baseY = ypos;
+            baseY = ypos;
 
             if (xrange != 0)
                 entity->setGlobalPosition(sf::Vector2f(xpos + (rand() % xrange), ypos));
@@ -827,7 +827,7 @@ void MissionController::spawnEntity(int id, bool collidable, bool attackable, in
         }
     }
 
-	spdlog::info("[MissionController] Loading finished. Loading took {} seconds", bm.getElapsedTime().asSeconds());
+    spdlog::info("[MissionController] Loading finished. Loading took {} seconds", bm.getElapsedTime().asSeconds());
 }
 
 void MissionController::spawnProjectile(PSprite& sprite, float xPos, float yPos, float speed, float hspeed, float vspeed, float angle, float max_dmg, float min_dmg, float crit, bool enemy)
@@ -967,7 +967,9 @@ void MissionController::updateMissions()
     }
 
     if (v4Core->saveReader.mission_levels[curMissionID] != 0)
+	{
         v4Core->saveReader.mission_levels[curMissionID] += 1;
+	}
 }
 
 void MissionController::addUnitThumb(int unit_class)
@@ -1137,9 +1139,9 @@ void MissionController::Initialise(Config& config, std::string backgroundString,
     spear_hit_solid.loadFromFile("resources/sfx/level/spear_hit_solid.ogg");
     s_heal.loadFromFile("resources/sfx/level/picked_heal.ogg");
 
-	spdlog::info("Mission initialization finished");
+    spdlog::info("Mission initialization finished");
 }
-void MissionController::StartMission(std::string missionFile, bool showCutscene, int missionID, float mission_multiplier)
+void MissionController::StartMission(std::string missionFile, std::string missionPath, bool showCutscene, int missionID, float mission_multiplier)
 {
     thisConfig->thisCore->saveToDebugLog("Starting mission");
 
@@ -1270,9 +1272,8 @@ void MissionController::StartMission(std::string missionFile, bool showCutscene,
 
     elist.close();
 
-    ifstream mf("resources/missions/" + missionFile);
-    cout << "Attempting to read a mission "
-         << "resources/missions/" << missionFile << endl;
+    ifstream mf(missionPath + missionFile);
+	spdlog::info("Attempting to read a mission from: {}", missionPath + missionFile);
 
     bool accepted = false;
     float ver = 0.0;
@@ -1554,22 +1555,22 @@ void MissionController::StartMission(std::string missionFile, bool showCutscene,
                         // Do nothing
                     }
 
-					spdlog::info("[MissionController] Spawning an entity: {}", id); // Candidate for removal?
+                    spdlog::info("[MissionController] Spawning an entity: {}", id); // Candidate for removal?
                     spawnEntity(id, collidable, attackable, xpos, xrange, cloneable, clone_delay, spawnrate, stat_mult, mindmg, maxdmg, hp, ypos, baseY, *color, layer, parent, loot, ent_custom_params);
                 } catch (const exception& e)
                 {
-					spdlog::error("An error occured while loading mission entity params from: resources/missions/{}. Error: {}", missionFile, e.what());
+                    spdlog::error("An error occured while loading mission entity params from: resources/missions/{}. Error: {}", missionFile, e.what());
                 }
 
                 ent_default_params.close();
             } catch (const exception& e)
             {
-				spdlog::error("An error occured while loading default entity params from: resources/units/entity/{}. Error: {}", entity_list[id], e.what());
+                spdlog::error("An error occured while loading default entity params from: resources/units/entity/{}. Error: {}", entity_list[id], e.what());
             }
         }
     } catch (const exception& e)
     {
-		spdlog::error("An error occured while loading mission entities from: resources/missions/{}. Error: {}", missionFile, e.what());
+        spdlog::error("An error occured while loading mission entities from: resources/missions/{}. Error: {}", missionFile, e.what());
     }
 
     ///make this unit load based on how the army is built later
@@ -1583,18 +1584,17 @@ void MissionController::StartMission(std::string missionFile, bool showCutscene,
 
     for (int i = 0; i < army_size; i++)
     {
-		spdlog::debug("Trying to find pon: {}", i);
+        spdlog::debug("Trying to find pon: {}", i);
         Pon* current_pon = v4Core->saveReader.ponReg.GetPonByID(i);
-		spdlog::debug("Making pon with class: {}", current_pon->pon_class);
+        spdlog::debug("Making pon with class: {}", current_pon->pon_class);
         switch (current_pon->pon_class)
         {
             case -1: ///this was earlier 0 which i dont understand because pon class 0 = yaripon lol
             {
-				spdlog::warn("Hatapon detected in saveReader.ponreg.pons");
+                spdlog::warn("Hatapon detected in saveReader.ponreg.pons");
                 break;
             }
-            case 0:
-			{
+            case 0: {
                 unique_ptr<Yaripon> wip_pon = make_unique<Yaripon>();
                 wip_pon.get()->LoadConfig(thisConfig);
                 wip_pon.get()->setUnitID(current_pon->pon_class + 1); ///have to set unit ID from 0 to 1 because 0 is already occupied by Hatapon
@@ -1604,22 +1604,20 @@ void MissionController::StartMission(std::string missionFile, bool showCutscene,
                 wip_pon.get()->max_hp = current_pon->pon_hp;
 
                 if (current_pon->slots[0] != -1)
-				{
+                {
                     wip_pon.get()->applyEquipment(v4Core->saveReader.invData.items[current_pon->slots[0]].item->order_id, 0);
-				}
-                else
-				{
-					spdlog::error("Yaripon has an empty equipment slot 1");
-				}
+                } else
+                {
+                    spdlog::error("Yaripon has an empty equipment slot 1");
+                }
 
                 if (current_pon->slots[1] != -1)
-				{
+                {
                     wip_pon.get()->applyEquipment(v4Core->saveReader.invData.items[current_pon->slots[1]].item->order_id, 1);
-				}
-                else
-				{
-					spdlog::error("Yaripon has an empty equipment slot 2");
-				}
+                } else
+                {
+                    spdlog::error("Yaripon has an empty equipment slot 2");
+                }
 
                 units.push_back(std::move(wip_pon));
                 break;
@@ -1692,7 +1690,7 @@ void MissionController::StartMission(std::string missionFile, bool showCutscene,
     rhythm.LoadTheme(songName); // thisConfig->GetString("debugTheme")
     missionTimer.restart();
 
-	spdlog::debug("Mission loading finished.");
+    spdlog::debug("Mission loading finished.");
     thisConfig->thisCore->saveToDebugLog("Mission loading finished.");
 
     isFinishedLoading = true;
@@ -1943,9 +1941,9 @@ bool MissionController::DoCollisionStepInAxis(float currentAxisAngle, HitboxFram
     std::vector<sf::Vector2f> currentVertices = currentObjectHitBoxFrame->getCurrentVertices();
 
     if (currentVertices.size() < 4)
-	{
-		spdlog::warn("Vertices alert!!! {}", currentVertices.size());
-	}
+    {
+        spdlog::warn("Vertices alert!!! {}", currentVertices.size());
+    }
 
     if (currentVertices.size() >= 4)
     {
@@ -2433,7 +2431,7 @@ void MissionController::DoMissionEnd(sf::RenderWindow& window, float fps)
                 if (!v4Core->mainMenu.patapolisMenu.initialised)
                 {
                     /// patapolis might not be initialised because we could be running the pre-patapolis scripted first mission.
-					spdlog::info("[ENDFLAG] Initialize Patapolis for the first time");
+                    spdlog::info("[ENDFLAG] Initialize Patapolis for the first time");
                     v4Core->mainMenu.patapolisMenu.Initialise(thisConfig, v4Core, &v4Core->mainMenu);
                 } else
                 {
