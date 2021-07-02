@@ -277,13 +277,6 @@ int ItemRegistry::getCategoryIDByString(std::string item_category)
 
 Item* ItemRegistry::getItemByName(std::string name, bool lang_specific)
 {
-    spdlog::info("ItemRegistry::getItemByName was called with parameters: {}, {}", name, lang_specific);
-
-    for (const auto& item : items)
-    {
-        spdlog::info("Item: {}", item->item_name);
-    }
-
     if (lang_specific) // By e.g. Wooden Spear (won't return if comparing between languages)
     {
         string converted_name = Func::ConvertToUtf8String(saveReader->thisConfig->strRepo.GetUnicodeString(name));

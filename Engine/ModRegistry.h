@@ -15,6 +15,7 @@ public:
         std::string version;
         nlohmann::json item_data;
         nlohmann::json worldmap_data;
+		std::unordered_map<std::string, std::wstring> string_map;
     };
 
     std::vector<Mod> mods;

@@ -214,16 +214,14 @@ void OptionsMenu::Initialise(Config* thisConfigs, V4Core* parent, Menu* curParen
     opt.createText(m_font, 25, sf::Color::White, Func::ConvertToUtf8String(thisConfigs->strRepo.GetUnicodeString(L"options_back")), q, 2);
     diff_options.push_back(opt);
 
-    ifstream langfile("resources/lang/lang.txt");
+    ifstream langfile("resources/lang/lang.txt"); // Why are we loading this here?
     string buf;
     int langcount = 0;
     int page = 0;
 
-    while (getline(langfile, buf))
-    {
-        vector<string> param = Func::Split(buf, '|');
-
-        opt.createText(m_font, 25, sf::Color::White, param[0], q, 2);
+    for(std::string lang : v4Core->config.strRepo.langNames)
+	{
+        opt.createText(m_font, 25, sf::Color::White, lang, q, 2);
         langs[page].push_back(opt);
 
         langcount++;

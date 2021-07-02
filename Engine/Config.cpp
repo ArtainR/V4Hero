@@ -121,7 +121,7 @@ void Config::LoadConfig(V4Core* core)
     conf2.close();
 
     /** Load lang from resources/lang/str_ENG.cfg **/
-    strRepo.LoadLanguageFiles(GetInt("lang"));
+    strRepo.LoadLanguageFiles(GetInt("lang"), &thisCore->modReg);
     fontPath = "resources/fonts/" + strRepo.langFonts[GetInt("lang") - 1];
     cout << strRepo.GetString(L"language_file_loaded") << endl;
 }
@@ -158,7 +158,7 @@ void Config::ReloadLanguages()
     /** Load lang from resources/lang/str_ENG.cfg **/
     if (changedLang)
     {
-        strRepo.LoadLanguageFiles(GetInt("lang"));
+        strRepo.LoadLanguageFiles(GetInt("lang"), &thisCore->modReg);
         cout << strRepo.GetString(L"language_file_loaded") << endl;
         changedLang = false;
     }

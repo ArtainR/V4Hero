@@ -1,4 +1,5 @@
 #include "StringRepository.h"
+#include "ModRegistry.h"
 #include "DebugOut.h"
 #include "Func.h"
 #include <algorithm>
@@ -11,19 +12,22 @@
 #include <locale>
 #include <string>
 #include <vector>
-using namespace std;
+#include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
+
+using json = nlohmann::json;
 
 StringRepository::StringRepository()
 {
     configDebugID = 0;
     ///check if config file already exists
-    ifstream check("config.ini");
+    std::ifstream check("config.ini");
     bool exists = check.good();
     check.close();
 }
-void StringRepository::LoadLanguageFile(wifstream* conf)
+void StringRepository::LoadLanguageFile(std::ifstream* conf, ModRegistry* modReg)
 {
-    vector<wstring> keysCheckList;
+    std::vector<std::wstring> keysCheckList;
     std::locale old_locale;
     std::locale utf8_locale(old_locale, new std::codecvt_utf8<wchar_t>);
     conf->imbue(utf8_locale);
@@ -31,114 +35,55 @@ void StringRepository::LoadLanguageFile(wifstream* conf)
 
     if (conf->good())
     {
-        std::wstring line;
-        while (getline(*conf, line))
-        {
-            ///ignore comments
-            if (line.find(L"//") == std::wstring::npos)
-            {
-                ///Split the Key and Value
-                ///wcout<<line<<endl;
+		json lang_data;
 
-                if (line.back() == '\r')
-                {
-                    line.pop_back();
-                }
-                vector<wstring> key = Func::Split(line, L'|');
+		*conf >> lang_data;
 
-                if (key.size() == 2)
-                {
-                    std::string s(key[0].begin(), key[0].end());
+		for(auto it = lang_data.begin(); it != lang_data.end(); ++it)
+		{
+			std::string key = it.key();
+			std::string val = it.value();
+			std::wstring value = std::wstring(val.begin(), val.end());
+			stringMap.insert(std::pair(key, value));
+		}
 
-                    for (int k = 0; k < key[1].size(); k++)
-                    {
-                        if (key[1][k] == L'\\')
-                            key[1][k] = L'\n';
-                    }
-
-                    stringMap[s] = key[1];
-                }
-            }
-        }
+		for(const auto& mod : modReg->mods)
+		{
+			stringMap.insert(mod.string_map.begin(), mod.string_map.end()); // Merge didn't wanna work, idk
+		}
     } else
     {
-        cout << "ERROR! Could not load lang file." << endl;
+		spdlog::error("Could not load lang file.");
     }
 
     conf->close();
 }
-void StringRepository::LoadLanguageFiles(int langNum)
+void StringRepository::LoadLanguageFiles(int langNum, ModRegistry* modReg)
 {
-    ifstream conf("resources/lang/lang.txt");
+    std::ifstream conf("resources/lang/lang.json");
 
     if (conf.good())
     {
-        std::string line;
-        while (getline(conf, line))
-        {
-            ///ignore comments
-            if (line.find("//") == std::string::npos)
-            {
-                if (line.back() == '\r')
-                {
-                    line.pop_back();
-                }
-                vector<string> key = Func::Split(line, L'|');
+		json lang_data;
 
-                if (key.size() == 3)
-                {
-                    cout << "Loaded language file'" << key[0] << "' with value '" << key[1] << "'" << endl;
-                    langFiles.push_back("" + key[1]);
-                    langNames.push_back(key[0]);
-                    langFonts.push_back(key[2]);
-                }
-            }
-        }
+		conf >> lang_data;
 
-        wifstream conf2("resources/lang/" + langFiles[langNum - 1] + ".txt");
-        cout << "#### Loading language file: " << langNames[langNum - 1] << endl;
-        LoadLanguageFile(&conf2);
+		for(const auto& lang : lang_data)
+		{
+			langFiles.push_back(lang["lang"]);
+			langNames.push_back(lang["lang"]);
+			langFonts.push_back(lang["font"]);
+		}
+
+        std::ifstream conf2("resources/lang/" + langFiles[langNum - 1] + ".json");
+		spdlog::info("Loading language file: {}", langNames[langNum - 1]);
+        LoadLanguageFile(&conf2, modReg);
     } else
     {
-        wifstream conf2("resources/lang/str_ENG.txt");
-        LoadLanguageFile(&conf2);
+        std::ifstream conf2("resources/lang/English.json");
+        LoadLanguageFile(&conf2, modReg);
     }
     conf.close();
-
-    /*switch (langNum){
-        case 1:
-            {
-                wifstream conf("resources/lang/str_ENG.txt");
-                LoadLanguageFile(&conf);
-                break;
-            }
-
-        case 2:{
-            wifstream conf("resources/lang/str_FRA.txt");
-            LoadLanguageFile(&conf);
-            break;}
-        case 3:{
-            wifstream conf("resources/lang/str_SPA.txt");
-                LoadLanguageFile(&conf);
-            break;}
-        case 4:{
-            wifstream conf("resources/lang/str_DAN.txt");
-            LoadLanguageFile(&conf);
-            break;}
-        case 5:{
-            wifstream conf("resources/lang/str_POL.txt");
-            LoadLanguageFile(&conf);
-            break;}
-        case 6:{
-            wifstream conf("resources/lang/str_EMJ.txt");
-            LoadLanguageFile(&conf);
-            break;}
-        default:{
-            wifstream conf("resources/lang/str_ENG.txt");
-            LoadLanguageFile(&conf);
-            break;}
-
-    }*/
 }
 
 

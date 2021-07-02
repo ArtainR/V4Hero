@@ -1,6 +1,7 @@
 #include "ModRegistry.h"
 #include "Item/Item.h"
 #include "V4Core.h"
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -54,7 +55,6 @@ void ModRegistry::loadMods()
                 {
                     Mod new_mod;
                     new_mod.path = folder;
-                    spdlog::info("Mod path: {}", folder);
 
                     json mod_info;
                     mod_file >> mod_info;
@@ -80,6 +80,52 @@ void ModRegistry::loadMods()
                     {
                         new_mod.version = "1.0.0";
                     }
+
+					std::vector<std::string> langs;
+					std::ifstream mod_lang_data(folder + "/lang/lang.json", std::ios::in);
+					if (mod_lang_data.good())
+					{
+						json lang_data;
+						mod_lang_data >> lang_data;
+
+						for (const auto& lang_name : lang_data)
+						{
+							langs.push_back(lang_name);
+						}
+					}
+
+					if(!langs.empty())
+					{
+						std::unordered_map<std::string, std::wstring> string_map;
+						std::string desired_lang = std::string(config->GetLanguageName().begin(), config->GetLanguageName().end());
+
+						if(auto i = find(langs.begin(), langs.end(), desired_lang); i != langs.end())
+						{
+							std::string lang_name = langs[i - langs.begin()];
+							
+							std::ifstream lang_data(folder + "/lang/" + lang_name + ".json");
+							if (lang_data.good())
+							{
+								json strings;
+
+								lang_data >> strings;
+
+								for(auto it = strings.begin(); it != strings.end(); ++it)
+								{
+									std::string key = it.key();
+									std::string val = it.value();
+									std::wstring value = std::wstring(val.begin(), val.end());
+									string_map.insert(std::pair(key, value));
+								}
+
+								new_mod.string_map = string_map;
+							} else
+							{
+								spdlog::error("Could not load lang file.");
+							}
+						}
+						
+					}
 
                     std::ifstream mod_worldmap_data(folder + "/missions/worldmap.dat", std::ios::in);
                     if (mod_worldmap_data.good())
@@ -131,9 +177,14 @@ void ModRegistry::addItems(std::vector<Item*>& items)
     {
         for (const auto& category : mod.item_data)
         {
-            for (auto it : category.items()) // do this to get key (i.e. what type the items are)
+            for (auto it = category.begin(); it != category.end(); ++it) // do this to get key (i.e. what type the items are)
             {
 				const auto& type = it.value();
+
+				if(type == "details") // Whoops
+				{
+					continue;
+				}
 
                 for (const auto& item : type)
                 {
