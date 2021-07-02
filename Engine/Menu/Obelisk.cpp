@@ -460,8 +460,6 @@ void ObeliskMenu::Update(sf::RenderWindow& window, float fps, InputController& i
                 ifstream wmap("resources/missions/worldmap.dat", std::ios::in);
                 json wmap_data;
 
-                //v4Core->modReader.addWorldmapData(wmap_data);
-
                 if (wmap.good())
                 {
                     wmap >> wmap_data;
