@@ -279,23 +279,20 @@ void Barracks::eventFired(sf::Event event)
     }
 }
 
-int Barracks::countOccupied(vector<int> order_id)
+int Barracks::countOccupied(std::string item_name)
 {
-    cout << "Barracks::countOccupied(" << order_id[0] << " " << order_id[1] << " " << order_id[2] << ")" << endl;
     int occ = 0;
 
     for (int i = 0; i < v4Core->saveReader.ponReg.pons.size(); i++) // Go through every pon
     {
         for (int o = 0; o < v4Core->saveReader.ponReg.pons[i].slots.size(); o++) // *through every equip slot of every pon
         {
-            if (v4Core->saveReader.ponReg.pons[i].slots[o] == v4Core->saveReader.invData.getInvID(order_id)) // if it matches the inv id (equivalent to is same item cause of the inv system)
+            if (v4Core->saveReader.ponReg.pons[i].slots[o] == v4Core->saveReader.invData.getInvID(item_name)) // if it matches the inv id (equivalent to is same item cause of the inv system)
             {
                 occ++;
             }
         }
     }
-
-    cout << "Item is occupied " << occ << " times" << endl;
 
     return occ;
 }
@@ -312,11 +309,11 @@ void Barracks::loadInventory()
         InventoryData::InventoryItem cur_inv_item = v4Core->saveReader.invData.items[i];
         Item* cur_item = cur_inv_item.item;
 
-        if (cur_item->order_id[0] == active_category)
+        if (v4Core->saveReader.itemReg.getCategoryIDByString(cur_item->item_category) == active_category)
         {
             if (active_category == 3) ///weapons, force spears
             {
-                if (cur_item->order_id[1] == 0)
+                if (cur_item->item_type == "spear")
                 {
                     items_filtered.push_back(v4Core->saveReader.invData.items[i]);
                     items_invIDs.push_back(i);
@@ -325,7 +322,7 @@ void Barracks::loadInventory()
 
             if (active_category == 4) ///armor, force helms
             {
-                if (cur_item->order_id[1] == 1)
+                if (cur_item->item_type == "helm")
                 {
                     items_filtered.push_back(v4Core->saveReader.invData.items[i]);
                     items_invIDs.push_back(i);
@@ -339,7 +336,7 @@ void Barracks::loadInventory()
         InventoryData::InventoryItem cur_inv_item = items_filtered[i];
         Item* cur_item = cur_inv_item.item;
         int cur_count = cur_inv_item.item_count;
-        int cur_occ_count = countOccupied(cur_item->order_id);
+        int cur_occ_count = countOccupied(cur_item->item_name);
 
         InvBox cur_box;
         cur_box.data = cur_item;
@@ -362,7 +359,7 @@ void Barracks::loadInventory()
         cur_box.r_inner.setSize(sf::Vector2f(46.0 * res_ratio_x, 46.0 * res_ratio_y));
         cur_box.r_inner.setFillColor(sf::Color(183, 183, 183, 255));
 
-        switch (cur_item->order_id[0]) // Is there a better way than nested switches here? (look: weapons -> spears or swords will be necessary)
+        switch (v4Core->saveReader.itemReg.getCategoryIDByString(cur_item->item_category)) // Is there a better way than nested switches here? (look: weapons -> spears or swords will be necessary)
         {
             case 0: // Key Items
             {
@@ -420,22 +417,14 @@ void Barracks::loadInventory()
     {
         std::sort(inventory_boxes.begin(), inventory_boxes.end(),
                   [](const InvBox& a, const InvBox& b) {
-                      if (a.data->order_id[0] != b.data->order_id[0])
-                      {
-                          return a.data->order_id[0] < b.data->order_id[0];
-                      }
-                      if (a.data->order_id[1] != b.data->order_id[1])
-                      {
-                          return a.data->order_id[1] < b.data->order_id[1];
-                      }
-                      if (a.data->order_id.size() > 2 && b.data->order_id.size() > 2)
-                      {
-                          return a.data->order_id[2] < b.data->order_id[2];
-                      } else
-                      {
-                          cout << "[ERROR]: Inventory boxes sorting in barrack.cpp has reached a point it shouldn't have." << '\n'
-                               << "[ The items may or may not appear in the correct order because of this.";
-                      }
+					if(a.data->priority != b.data->priority)
+					{
+						return a.data->priority < b.data->priority;
+					}
+					else
+					{
+						return a.data->item_name < b.data->item_name;
+					}
                   });
     }
 

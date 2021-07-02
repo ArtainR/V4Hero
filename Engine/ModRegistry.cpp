@@ -52,8 +52,8 @@ void ModRegistry::loadMods()
 
                 if (mod_file.good())
                 {
-                    Mod tmp;
-                    tmp.path = folder;
+                    Mod new_mod;
+                    new_mod.path = folder;
                     spdlog::info("Mod path: {}", folder);
 
                     json mod_info;
@@ -61,24 +61,24 @@ void ModRegistry::loadMods()
 
                     try
                     {
-                        tmp.name = mod_info["name"];
+                        new_mod.name = mod_info["name"];
                     } catch (const std::exception& e)
                     {
-                        tmp.name = "No Data";
+                        new_mod.name = "No Data";
                     }
                     try
                     {
-                        tmp.author = mod_info["author"];
+                        new_mod.author = mod_info["author"];
                     } catch (const std::exception& e)
                     {
-                        tmp.author = "No Data";
+                        new_mod.author = "No Data";
                     }
                     try
                     {
-                        tmp.version = mod_info["version"];
+                        new_mod.version = mod_info["version"];
                     } catch (const std::exception& e)
                     {
-                        tmp.version = "1.0.0";
+                        new_mod.version = "1.0.0";
                     }
 
                     std::ifstream mod_worldmap_data(folder + "/missions/worldmap.dat", std::ios::in);
@@ -87,7 +87,7 @@ void ModRegistry::loadMods()
                         json worldmap_data;
                         mod_worldmap_data >> worldmap_data;
 
-                        tmp.worldmap_data = worldmap_data;
+                        new_mod.worldmap_data = worldmap_data;
                     }
 
                     std::ifstream mod_item_data(folder + "/data/item_data.json", std::ios::in);
@@ -96,12 +96,12 @@ void ModRegistry::loadMods()
                         json item_data;
                         mod_item_data >> item_data;
 
-                        tmp.item_data = item_data;
+                        new_mod.item_data = item_data;
                     }
 
-                    spdlog::info("Loaded mod: {} by {}, version {}", tmp.name, tmp.author, tmp.version);
+                    spdlog::info("Loaded mod: {} by {}, version {}", new_mod.name, new_mod.author, new_mod.version);
 
-                    mods.push_back(tmp);
+                    mods.push_back(new_mod);
                 }
             }
         }
@@ -131,117 +131,119 @@ void ModRegistry::addItems(std::vector<Item*>& items)
     {
         for (const auto& category : mod.item_data)
         {
-            for (const auto& type : category)
+            for (auto it : category.items()) // do this to get key (i.e. what type the items are)
             {
+				const auto& type = it.value();
+
                 for (const auto& item : type)
                 {
                     if (item.is_object())
                     {
-                        Item* tmp = new Item();
+                        Item* new_item = new Item();
 
-                        bool isEquipment;
+						std::string item_category = "nodata";
+                        bool isEquipment = false;
 
-                        try
-                        {
-                            tmp->item_category = category[0];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->item_category = "nodata";
-                        }
-                        try
-                        {
-                            isEquipment = category[1];
-                        } catch (const std::exception& e)
-                        {
-                            isEquipment = false;
-                        }
-                        try
-                        {
-                            tmp->item_type = type[0];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->item_type = "nodata";
-                        }
+						if (auto i = category.find("details"); i != category.end())
+						{
+							if (auto o = category["details"].find("category"); o != category["details"].end())
+							{
+								item_category = category["details"]["category"];
+							}
+							if (auto o = category["details"].find("equipment"); o != category["details"].end())
+							{
+								isEquipment = category["details"]["equipment"];
+							}
+						}
+						new_item->item_category = item_category;
 
-                        try
-                        {
-                            tmp->item_name = item["name"];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->item_name = "item_stone";
-                        }
-                        try
-                        {
-                            tmp->item_description = item["desc"];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->item_description = "desc_stone";
-                        }
-                        try
-                        {
-                            tmp->icon_path = item["icon"];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->icon_path = "stone";
-                        }
-                        try
-                        {
-                            tmp->spritesheet = item["item_group"];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->spritesheet = "main";
-                        }
-                        try
-                        {
-                            tmp->spritesheet_id = item["item_id"];
-                        } catch (const std::exception& e)
-                        {
-                            tmp->spritesheet_id = 1;
-                        }
+						new_item->item_type = it.key();
+
+						std::string item_name = "item_stone";
+						if (auto i = item.find("name"); i != item.end())
+						{
+							item_name = item["name"];
+						}
+						new_item->item_name = item_name;
+
+						std::string item_desc = "desc_stone";
+						if (auto i = item.find("desc"); i != item.end())
+						{
+							item_desc = item["desc"];
+						}
+						new_item->item_description = item_desc;
+
+						std::string icon_path = "stone";
+						if (auto i = item.find("icon"); i != item.end())
+						{
+							icon_path = item["icon"];
+						}
+						new_item->icon_path = icon_path;
+
+						std::string spritesheet = "main";
+						if (auto i = item.find("item_group"); i != item.end())
+						{
+							spritesheet = item["item_group"];
+						}
+						new_item->spritesheet = spritesheet;
+
+						int spritesheet_id = 1;
+						if (auto i = item.find("item_id"); i != item.end())
+						{
+							spritesheet_id = item["item_id"];
+						}
+						new_item->spritesheet_id = spritesheet_id;
+
+						int priority = 1;
+						if (auto i = item.find("priority"); i != item.end())
+						{
+							priority = item["priority"];
+						}
+						new_item->priority = priority;
 
                         if (isEquipment)
                         {
-                            tmp->equip = new Equipment();
-                            try
-                            {
-                                tmp->equip->hp = item["hp"];
-                            } catch (const std::exception& e)
-                            {
-                                tmp->equip->hp = 0;
-                            }
-                            try
-                            {
-                                tmp->equip->min_dmg = item["min_dmg"];
-                            } catch (const std::exception& e)
-                            {
-                                tmp->equip->min_dmg = 0;
-                            }
-                            try
-                            {
-                                tmp->equip->max_dmg = item["max_dmg"];
-                            } catch (const std::exception& e)
-                            {
-                                tmp->equip->max_dmg = 0;
-                            }
-                            try
-                            {
-                                tmp->equip->crit = item["crit"];
-                            } catch (const std::exception& e)
-                            {
-                                tmp->equip->crit = 0;
-                            }
-                            try
-                            {
-                                tmp->equip->attack_speed = item["attack_speed"];
-                            } catch (const std::exception& e)
-                            {
-                                tmp->equip->attack_speed = 0;
-                            }
+                            new_item->equip = new Equipment();
+
+							int hp = 0;
+							if (auto i = item.find("hp"); i != item.end())
+							{
+								hp = item["hp"];
+							}
+							new_item->equip->hp = hp;
+
+							int min_dmg = 0;
+							if (auto i = item.find("min_dmg"); i != item.end())
+							{
+								min_dmg = item["min_dmg"];
+							}
+							new_item->equip->min_dmg = min_dmg;
+
+							int max_dmg = 0;
+							if (auto i = item.find("max_dmg"); i != item.end())
+							{
+								max_dmg = item["max_dmg"];
+							}
+							new_item->equip->max_dmg = max_dmg;
+
+							int crit = 0;
+							if (auto i = item.find("crit"); i != item.end())
+							{
+								crit = item["crit"];
+							}
+							new_item->equip->crit = crit;
+
+							float attack_speed = 0.0F;
+							if (auto i = item.find("attack_speed"); i != item.end())
+							{
+								attack_speed = item["attack_speed"];
+							}
+							new_item->equip->attack_speed = attack_speed;
                         }
 
-                        spdlog::info("Added modded item: {}", tmp->item_name);
+                        spdlog::info("Added modded item: {}", new_item->item_name);
 
-                        items.push_back(tmp);
+                        items.push_back(new_item);
                     }
                 }
             }

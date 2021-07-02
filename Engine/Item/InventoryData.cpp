@@ -16,14 +16,6 @@ InventoryData::~InventoryData()
 {
 }
 
-void InventoryData::init(ItemRegistry* thisItemReg)
-{
-    itemReg = thisItemReg;
-    itemReg->saveReader = saveReader;
-    cout << "Items size: " << itemReg->items.size() << endl;
-    ;
-}
-
 Item* InventoryData::getItemByItemID(vector<int> inv_id)
 {
     for (int i = 0; i < items.size(); i++)
@@ -108,14 +100,14 @@ bool InventoryData::checkItemObtained(string item_name)
 
 void InventoryData::addItem(string item_name, int count)
 {
-    cout << "Items size: " << itemReg->items.size() << endl;
+    cout << "Items size: " << saveReader << endl;
     if (checkItemObtained(item_name))
     {
         items[getInvID(item_name)].item_count += count;
     } else
     {
         InventoryData::InventoryItem new_item;
-        new_item.item = itemReg->getItemByName(item_name);
+        new_item.item = saveReader->itemReg.getItemByName(item_name);
         new_item.item_count = count;
         items.push_back(new_item);
     }

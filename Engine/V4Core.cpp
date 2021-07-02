@@ -128,7 +128,6 @@ V4Core::V4Core()
     modReg.init(&config);
 
     // Has to happen after mod registry initializes itself
-    // Sidenote: Why the heck are we loading items *twice* every time?
     saveReader.init(config);
 }
 

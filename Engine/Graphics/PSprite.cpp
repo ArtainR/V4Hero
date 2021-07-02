@@ -9,7 +9,6 @@ PSprite::PSprite()
 
 void PSprite::loadFromFile(std::string file, int q)
 {
-    std::cout << file << std::endl;
     std::string a = file.substr(0, file.find_last_of("."));
     std::string b = file.substr(file.find_last_of("."));
     std::string sq = "";
@@ -38,7 +37,6 @@ void PSprite::loadFromFile(std::string file, int q)
     qualitySetting = q;
     resSetting = 1;
 
-    std::cout << "[PSPRITE] Loading " << c << std::endl;
     texname = c;
 
     if (!t.loadFromFile(c))
@@ -55,7 +53,6 @@ void PSprite::loadFromFile(std::string file, int q)
 
 void PSprite::loadFromFile(std::string file, int q, int r = 1)
 {
-    std::cout << file << std::endl;
     std::string a = file.substr(0, file.find_last_of("."));
     std::string b = file.substr(file.find_last_of("."));
     std::string sq = "";
@@ -83,8 +80,7 @@ void PSprite::loadFromFile(std::string file, int q, int r = 1)
 
     qualitySetting = q;
     resSetting = r;
-
-    std::cout << "[PSPRITE] Loading " << c << std::endl;
+ 
     texname = c;
 
     if (!t.loadFromFile(c))

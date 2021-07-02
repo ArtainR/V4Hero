@@ -10,7 +10,6 @@ class InventoryData
 {
 public:
     SaveReader* saveReader;
-    ItemRegistry* itemReg;
 
     struct InventoryItem {
         Item* item;
@@ -19,7 +18,6 @@ public:
         int item_count;
     };
     std::vector<InventoryItem> items;
-    void init(ItemRegistry* itemReg);
     Item* getItemByItemID(std::vector<int> inv_id);
     int getItemCountByID(std::vector<int> item_id);
     int getItemCountByInvID(int item_inv_id);

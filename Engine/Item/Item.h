@@ -11,6 +11,7 @@ public:
     std::string item_name;
     std::string item_description;
     std::string icon_path;
+	int priority;
     std::string spritesheet = "none";
     int spritesheet_id = -1;
     Equipment* equip; // This isn't good but it's the best I've got rn

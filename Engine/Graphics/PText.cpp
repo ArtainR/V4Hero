@@ -9,8 +9,6 @@ PText::PText()
 
 void PText::createText(sf::Font& font, float characterSize, sf::Color color, sf::String text_string, int q, int r)
 {
-    cout << "[PText] Creating a new PText object: " << characterSize << " " << text_string.toAnsiString() << " " << q << " " << r << endl;
-
     f = font;
     cS = characterSize;
     c = color;

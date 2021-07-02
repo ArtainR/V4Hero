@@ -46,11 +46,12 @@ void SaveReader::init(Config& tconfig)
 {
     thisConfig = &tconfig;
     itemReg.readItemFiles(); ///load up items
-    invData.init(&itemReg);
 }
 
 void SaveReader::LoadSave()
 {
+    invData.saveReader = this; // It crashes without this line. Dunno why, just that invData.saveReader ends up a nullptr
+
     debugOut = thisConfig->debugOut;
 
     ifstream conf("resources/data/sv1.p4sv", std::ios::in);

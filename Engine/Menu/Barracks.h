@@ -162,7 +162,7 @@ public:
     void setTitle(int menu_position);
 
     void onExit();
-    int countOccupied(std::vector<int>);
+    int countOccupied(std::string item_name);
     void loadInventory();
     void setInventoryPosition();
     void applyEquipment();
