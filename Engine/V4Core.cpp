@@ -126,6 +126,10 @@ V4Core::V4Core()
 
     // Initialize ModRegistry (this has to be done here for later ability to enable / disable mods)
     modReg.init(&config);
+
+    // Has to happen after mod registry initializes itself
+    // Sidenote: Why the heck are we loading items *twice* every time?
+    saveReader.init(config);
 }
 
 void V4Core::saveToDebugLog(string data)

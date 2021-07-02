@@ -18,6 +18,14 @@ ObeliskMenu::ObeliskMenu()
 void ObeliskMenu::addMission(json missiondata)
 {
     Mission tmp;
+    if (json::iterator i = missiondata.find("mission_id"); i != missiondata.end())
+    {
+        spdlog::info("*i: {}", *i);
+        tmp.mis_ID = *i;
+    } else
+    {
+        tmp.mis_ID = 0;
+    }
     try
     {
         tmp.mis_ID = missiondata["mission_id"];

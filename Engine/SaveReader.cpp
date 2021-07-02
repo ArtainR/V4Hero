@@ -38,14 +38,19 @@ SaveReader::SaveReader()
     isNewSave = !exists;
 
     itemReg.saveReader = this;
-    itemReg.readItemFiles(); ///load up items
 
     invData.saveReader = this;
 }
 
-void SaveReader::LoadSave(Config& tconfig)
+void SaveReader::init(Config& tconfig)
 {
     thisConfig = &tconfig;
+    itemReg.readItemFiles(); ///load up items
+    invData.init(&itemReg);
+}
+
+void SaveReader::LoadSave()
+{
     debugOut = thisConfig->debugOut;
 
     ifstream conf("resources/data/sv1.p4sv", std::ios::in);
@@ -65,7 +70,7 @@ void SaveReader::LoadSave(Config& tconfig)
 
         for (int i = 0; i < save_data["items"].size(); i++)
         {
-            invData.addItem(itemReg.getItemByName(save_data["items"][i]["name"])->order_id, save_data["items"][i]["count"]);
+            invData.addItem(save_data["items"][i]["name"], save_data["items"][i]["count"]);
         }
 
         if (save_data["army"][0]["rarepon"] != -1) // Is hero unlocked?
@@ -78,9 +83,10 @@ void SaveReader::LoadSave(Config& tconfig)
             new_pon.pon_exp = save_data["army"][0]["exp"];
             for (int o = 0; o < save_data["army"][0]["slots"].size(); o++)
             {
-                if (save_data["army"][0]["slots"][0] != -1) // Is this necessary?
+                if (save_data["army"][0]["slots"][o] != -1) // Is this necessary?
                 {
-                    new_pon.giveItem(invData.getInvIDByItemID(save_data["army"][0]["slots"][o]), o);
+                    std::vector<int> item_id = save_data["army"][0]["slots"][o];
+                    new_pon.giveItem(invData.getInvID(item_id), o);
                 }
             }
             ponReg.pons.push_back(new_pon);
@@ -101,9 +107,10 @@ void SaveReader::LoadSave(Config& tconfig)
                 new_pon.pon_exp = save_data["army"][i][o]["exp"];
                 for (int p = 0; p < save_data["army"][i][o]["slots"].size(); p++)
                 {
-                    if (save_data["army"][i][o]["slots"][p][0] != -1) // Is this necessary?
+                    if (save_data["army"][i][o]["slots"][p] != -1) // Is this necessary?
                     {
-                        new_pon.giveItem(invData.getInvIDByItemID(save_data["army"][i][o]["slots"][p]), p);
+                        std::vector<int> item_id = save_data["army"][i][o]["slots"][p];
+                        new_pon.giveItem(invData.getInvID(item_id), p);
                     }
                 }
                 ponReg.pons.push_back(new_pon);
@@ -124,9 +131,10 @@ void SaveReader::LoadSave(Config& tconfig)
                 new_pon.pon_exp = save_data["army"][i][o]["exp"];
                 for (int p = 0; p < save_data["army"][i][o]["slots"].size(); p++)
                 {
-                    if (save_data["army"][i][o]["slots"][0] != -1) // Is this necessary?
+                    if (save_data["army"][i][o]["slots"][p] != -1) // Is this necessary?
                     {
-                        new_pon.giveItem(invData.getInvIDByItemID(save_data["army"][i][o]["slots"][p]), p);
+                        std::vector<int> item_id = save_data["army"][i][o]["slots"][p];
+                        new_pon.giveItem(invData.getInvID(item_id), p);
                     }
                 }
                 ponReg.pons.push_back(new_pon);
@@ -174,7 +182,7 @@ void SaveReader::CreateBlankSave()
     vector<string> starter_items = {"item_wooden_spear", "item_wooden_spear", "item_wooden_spear", "item_wooden_helmet", "item_wooden_helmet", "item_wooden_helmet"};
     for (int i = 0; i < starter_items.size(); i++)
     {
-        invData.addItem(itemReg.getItemByName(starter_items[i])->order_id);
+        invData.addItem(starter_items[i]);
     }
 
     // Defining 3 Yaripons
@@ -190,8 +198,8 @@ void SaveReader::CreateBlankSave()
         newPon.pon_exp = 0;
         newPon.pon_level = 1;
 
-        newPon.giveItem(invData.getInvIDByItemID(itemReg.getItemByName("item_wooden_spear")->order_id), 0);
-        newPon.giveItem(invData.getInvIDByItemID(itemReg.getItemByName("item_wooden_helmet")->order_id), 1);
+        newPon.giveItem(invData.getInvID("item_wooden_spear"), 0);
+        newPon.giveItem(invData.getInvID("item_wooden_helmet"), 1);
 
         ponReg.pons.push_back(newPon);
     }

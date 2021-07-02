@@ -2,6 +2,7 @@
 #define MODREGISTRY_H
 
 #include "Config.h"
+#include "Item/Item.h"
 #include <nlohmann/json.hpp>
 
 class ModRegistry
@@ -12,7 +13,7 @@ public:
         std::string name;
         std::string author;
         std::string version;
-        nlohmann::json items;
+        nlohmann::json item_data;
         nlohmann::json worldmap_data;
     };
 
@@ -22,6 +23,7 @@ public:
     ~ModRegistry();
     void init(Config* thisConfig);
     nlohmann::json addModMissions(nlohmann::json worldData);
+    void addItems(std::vector<Item*>& items);
 
 private:
     Config* config;

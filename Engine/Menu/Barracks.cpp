@@ -288,7 +288,7 @@ int Barracks::countOccupied(vector<int> order_id)
     {
         for (int o = 0; o < v4Core->saveReader.ponReg.pons[i].slots.size(); o++) // *through every equip slot of every pon
         {
-            if (v4Core->saveReader.ponReg.pons[i].slots[o] == v4Core->saveReader.invData.getInvIDByItemID(order_id)) // if it matches the inv id (equivalent to is same item cause of the inv system)
+            if (v4Core->saveReader.ponReg.pons[i].slots[o] == v4Core->saveReader.invData.getInvID(order_id)) // if it matches the inv id (equivalent to is same item cause of the inv system)
             {
                 occ++;
             }
@@ -1163,7 +1163,7 @@ void Barracks::update(sf::RenderWindow& window, float fps, InputController& inpu
 
                                 if ((inventory_boxes[invbox_id].amount > inventory_boxes[invbox_id].occ_amount) && (v4Core->saveReader.ponReg.pons[current_selected_pon].canEquip(currentItem.item->order_id, active_category - 3))) ///I have put active_category-2 here because where=0 when you wanna equip spear and where=1 when you wanna equip helm. theres some confusion between gui slots and equipment slots in ponregistry. gotta fix it someday.
                                 {
-                                    v4Core->saveReader.ponReg.pons[current_selected_pon].giveItem(v4Core->saveReader.invData.getInvIDByItemID(currentItem.item->order_id), active_category - 3);
+                                    v4Core->saveReader.ponReg.pons[current_selected_pon].giveItem(v4Core->saveReader.invData.getInvID(currentItem.item->order_id), active_category - 3);
 
                                     refreshStats();
                                     applyEquipment();

@@ -30,7 +30,8 @@ public:
     std::string save_ver = "2.0";
 
     SaveReader();
-    void LoadSave(Config& tconfig);
+    void init(Config& tconfig);
+    void LoadSave();
     void Flush();
     void CreateBlankSave();
     DebugOut* debugOut;

@@ -54,21 +54,21 @@ void NameEntryButtonList::SelectButton(int index)
 
                 for (int i = 0; i < 3; i++)
                 {
-                    savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_wooden_spear")->order_id);
-                    savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_wooden_helmet")->order_id);
+                    savMenu->v4Core->saveReader.invData.addItem("item_wooden_spear");
+                    savMenu->v4Core->saveReader.invData.addItem("item_wooden_helmet");
                 }
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_iron_helmet")->order_id);
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_iron_spear")->order_id);
+                savMenu->v4Core->saveReader.invData.addItem("item_iron_helmet");
+                savMenu->v4Core->saveReader.invData.addItem("item_iron_spear");
 
 
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_shubaba_mask")->order_id);
+                savMenu->v4Core->saveReader.invData.addItem("item_shubaba_mask");
 
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_keepsake")->order_id);
+                savMenu->v4Core->saveReader.invData.addItem("item_keepsake");
 
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_pon_drum")->order_id);
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_pata_drum")->order_id);
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_chaka_drum")->order_id);
-                savMenu->v4Core->saveReader.invData.addItem(savMenu->v4Core->saveReader.itemReg.getItemByName("item_don_drum")->order_id);
+                savMenu->v4Core->saveReader.invData.addItem("item_pon_drum");
+                savMenu->v4Core->saveReader.invData.addItem("item_pata_drum");
+                savMenu->v4Core->saveReader.invData.addItem("item_chaka_drum");
+                savMenu->v4Core->saveReader.invData.addItem("item_don_drum");
 
 
                 Pon starterPon = Pon(&savMenu->v4Core->saveReader);

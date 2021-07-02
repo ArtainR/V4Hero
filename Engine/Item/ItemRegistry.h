@@ -19,6 +19,7 @@ public:
     Item* getItemByName(std::string name, bool lang_specific = false);
     enum Categories
     {
+        NO_DATA = -1,
         KEY_ITEMS = 0,
         MATERIALS = 1,
         CONSUMABLES = 2,

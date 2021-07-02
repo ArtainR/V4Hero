@@ -306,7 +306,8 @@ void MissionController::spawnEntity(int id, bool collidable, bool attackable, in
         ///Force entity to spawn when specific item is not obtained
         if (additional_data.contains("forceSpawnIfNotObtained"))
         {
-            if (!v4Core->saveReader.invData.checkItemObtainedByName(additional_data["forceSpawnIfNotObtained"]))
+            std::string item_name = additional_data["forceSpawnIfNotObtained"];
+            if (!v4Core->saveReader.invData.checkItemObtained(item_name))
             {
                 spawn = true;
             }
@@ -907,7 +908,7 @@ void MissionController::submitPickedItems()
     for (int i = 0; i < pickedItems.size(); i++)
     {
         InventoryData::InventoryItem invItem;
-        v4Core->saveReader.invData.addItem(v4Core->saveReader.itemReg.getItemByName(pickedItems[i].item_name)->order_id);
+        v4Core->saveReader.invData.addItem(pickedItems[i].item_name);
         if (pickedItems[i].item_name == "item_soggy_map") ///Grubby map
         {
             ///Check if Patapine Grove missions doesnt exist, and if Patapine Grove is not unlocked already

@@ -63,6 +63,7 @@ set(ENGINE_FILES
         Engine/Graphics/ScreenFade.cpp
         Engine/Math/PVector.cpp
         Engine/SaveReader.cpp
+		Engine/ModRegistry.cpp
         Engine/Input/InputController.cpp
         Engine/Rhythm/RhythmGUI.cpp
         Engine/Rhythm/RhythmController.cpp

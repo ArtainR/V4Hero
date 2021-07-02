@@ -343,7 +343,7 @@ void MainMenu::SelectMenuOption()
             {
                 /** Load save from saveReader **/
                 v4Core->saveReader.Flush();
-                v4Core->saveReader.LoadSave(*config);
+                v4Core->saveReader.LoadSave();
 
                 if (v4Core->saveReader.save_ver != "2.0")
                 {

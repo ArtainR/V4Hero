@@ -145,6 +145,7 @@ public:
     MissionController* currentController;
     Config* thisConfig;
     std::string mission_file;
+    std::string mission_path;
     Camera camera;
     Menu* parentMenu;
 

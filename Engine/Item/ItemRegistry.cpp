@@ -1,12 +1,14 @@
 #include "ItemRegistry.h"
 #include "../Config.h"
 #include "../Func.h"
+#include "../ModRegistry.h"
 #include "../SaveReader.h"
+#include "../V4Core.h"
 #include "Equipment.h"
 #include "Item.h"
 #include <fstream>
-#include <iostream>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 using json = nlohmann::json; // Convenience recommended by the library
@@ -25,7 +27,7 @@ void ItemRegistry::readItemFiles()
     {
         for (int j = 0; j < item_data["items"][i].size(); j++)
         {
-            if (item_data["items"][i][0].is_array()) // Check whether array or something else (if something else we know the array is 2D, not 3D) (technically, we could just check if i == 0 but futureproofing)
+            if (item_data["items"][i][0].is_array()) // If it isn't that means the item_data.json file is old
             {
                 //type_counts[i]++;
                 for (int k = 0; k < item_data["items"][i][j].size(); k++)
@@ -34,13 +36,6 @@ void ItemRegistry::readItemFiles()
                     {
                         case 0: ///Key items
                         {
-                            //cout << "[ERROR] Key Items section of item_data.json thought to be 3 levels of arrays" << endl;
-                            //item_counts[0]++;
-
-                            // Note from Owocek (27.05.2021)
-                            // I made Key Items section to be 3 level array just because it would be pain in the ass to differentiate 2 level and 3 level arrays when dropping items
-                            // Or maybe you got it covered already and I screwed stuff up, but imo it's better if everything is 3 layer than having "exclusives", right?
-
                             Item* new_item = new Item();
                             new_item->item_category = "key_items";
                             new_item->item_type = "key_item";
@@ -53,7 +48,6 @@ void ItemRegistry::readItemFiles()
                             new_item->order_id.push_back(j);
                             new_item->order_id.push_back(k);
                             items.push_back(new_item);
-                            cout << "[DEBUG] Item Registered: " << new_item->order_id[0] << ", " << new_item->order_id[1] << ", " << new_item->order_id[2] << " " << new_item->item_name << endl;
 
                             break;
                         }
@@ -97,7 +91,6 @@ void ItemRegistry::readItemFiles()
                             new_item->order_id.push_back(i);
                             new_item->order_id.push_back(j);
                             new_item->order_id.push_back(k);
-                            cout << "[DEBUG] Item Registered: " << new_item->order_id[0] << ", " << new_item->order_id[1] << ", " << new_item->order_id[2] << " " << new_item->item_name << endl;
                             items.push_back(new_item);
 
                             break;
@@ -122,7 +115,6 @@ void ItemRegistry::readItemFiles()
                             new_item->order_id.push_back(i);
                             new_item->order_id.push_back(j);
                             new_item->order_id.push_back(k);
-                            cout << "[DEBUG] Item Registered: " << new_item->order_id[0] << ", " << new_item->order_id[1] << ", " << new_item->order_id[2] << " " << new_item->item_name << endl;
                             items.push_back(new_item);
 
                             break;
@@ -159,7 +151,6 @@ void ItemRegistry::readItemFiles()
                             new_weapon->order_id.push_back(i);
                             new_weapon->order_id.push_back(j);
                             new_weapon->order_id.push_back(k);
-                            cout << "[DEBUG] Item Registered: " << new_weapon->order_id[0] << ", " << new_weapon->order_id[1] << ", " << new_weapon->order_id[2] << ", " << new_weapon->icon_path << ", " << new_weapon->icon_path << endl;
                             items.push_back(new_weapon);
 
                             break;
@@ -201,7 +192,6 @@ void ItemRegistry::readItemFiles()
                             new_armour->order_id.push_back(i);
                             new_armour->order_id.push_back(j);
                             new_armour->order_id.push_back(k);
-                            cout << "[DEBUG] Item Registered: " << new_armour->order_id[0] << ", " << new_armour->order_id[1] << ", " << new_armour->order_id[2] << ", " << new_armour->icon_path << ", " << new_armour->item_name << endl;
                             items.push_back(new_armour);
 
                             break;
@@ -214,60 +204,19 @@ void ItemRegistry::readItemFiles()
                 }
             } else
             {
-                //type_counts[i] = 1;
-                switch (i)
-                {
-                    case 0: ///Key items
-                    {
-                        Item* new_item = new Item();
-                        new_item->item_category = "key_items";
-                        new_item->item_type = "key_item";
-                        new_item->item_name = item_data["items"][i][j]["name"];
-                        new_item->item_description = item_data["items"][i][j]["desc"];
-                        new_item->icon_path = item_data["items"][i][j]["icon"];
-                        new_item->spritesheet = item_data["items"][i][j]["item_group"];
-                        new_item->spritesheet_id = item_data["items"][i][j]["item_id"];
-                        new_item->order_id.push_back(i);
-                        new_item->order_id.push_back(j);
-                        items.push_back(new_item);
-                        cout << "[DEBUG] Item Registered: " << new_item->order_id[0] << ", " << new_item->order_id[1] << endl;
-                        //item_counts[0]++;
-                        break;
-                    }
-
-                    case 1: /// Materials
-                    {
-                        cout << "[ERROR] Materials section of item_data.json thought to be only 2 levels of arrays" << endl;
-                        //item_counts[type_counts[1] + j]++; // I dunno but I might as well see if it works
-                        break;
-                    }
-
-                    case 2: /// Consumables
-                    {
-                        cout << "[ERROR] Consumables section of item_data.json thought to be only 2 levels of arrays" << endl;
-                        //item_counts[type_counts[2] + j]++;
-                        break;
-                    }
-
-                    case 3: /// Weapons
-                    {
-                        cout << "[ERROR] Weapons section of item_data.json thought to be only 2 levels of arrays" << endl;
-                        //item_counts[type_counts[4] + j]++;
-                        break;
-                    }
-
-                    case 4: /// Armour
-                    {
-                        cout << "[ERROR] Armour section of item_data.json thought to be only 2 levels of arrays" << endl;
-                        //item_counts[type_counts[5] + j]++;
-                        break;
-                    }
-                }
+                spdlog::error("Old item_data.json detected");
             }
         }
     }
 
-    cout << "ItemRegistry::readItemFiles(): amount of items: " << items.size() << endl;
+    spdlog::info("Vanilla items count: {}", items.size());
+
+    if (!saveReader->thisConfig->thisCore->modReg.mods.empty())
+    {
+        int oldCount = items.size();
+        saveReader->thisConfig->thisCore->modReg.addItems(items);
+        spdlog::info("Modded items count: {}", items.size() - oldCount);
+    }
 
     /*
     cout << "Loaded items:" << endl;
@@ -295,45 +244,15 @@ ItemRegistry::~ItemRegistry()
 
 Item* ItemRegistry::getItemByID(std::vector<int> id)
 {
-    for (int i = 0; i < items.size(); i++) // Just to test other stuff
+    for (int i = 0; i < items.size(); i++)
     {
         if (items[i]->order_id == id)
         {
             return items[i];
         }
     }
-    /*
-    int total_id = 0;
-    for(int i = type_counts[id[0]]; i >= 0; i--)
-    {
-        if(i == type_counts[id[0]])
-        {
-            o = id[1];
-        }
-        else
-        {
-            o = item_counts[i][type_counts[]]
-        }
-        for(; o)
-    }
-    cerr  << "Returning: " << items[total_id + id[id.size() - 1]]->item_name << endl << endl;
-    cerr << "total_id is " << total_id << endl;
-    if(items[total_id + id[id.size() - 1]]->order_id != id)
-    {
-        cout << "[ERROR] Item \"found\" but is wrong" << endl;
-    }
-    else
-    {
-        return items[total_id + id[id.size() - 1]];
-    }
-    */
-    if (id.size() > 2)
-    {
-        cout << "[ERROR] Item registry failed to found item of id{" << id[0] << " " << id[1] << " " << id[2] << endl;
-    } else
-    {
-        cout << "[ERROR] Item registry failed to found item of id{" << id[0] << " " << id[1] << endl;
-    }
+
+    spdlog::error("Item registry failed to find item of id [{}, {}, {}]", id[0], id[1], id[2]);
 }
 
 int ItemRegistry::getCategoryIDByString(std::string item_category)
@@ -352,24 +271,33 @@ int ItemRegistry::getCategoryIDByString(std::string item_category)
 
 Item* ItemRegistry::getItemByName(std::string name, bool lang_specific)
 {
+    spdlog::info("ItemRegistry::getItemByName was called with parameters: {}, {}", name, lang_specific);
+
+    for (const auto& item : items)
+    {
+        spdlog::info("Item: {}", item->item_name);
+    }
+
     if (lang_specific) // By e.g. Wooden Spear (won't return if comparing between languages)
     {
         string converted_name = Func::ConvertToUtf8String(saveReader->thisConfig->strRepo.GetUnicodeString(name));
-        for (int i = 0; i < items.size(); i++)
+        for (const auto& item : items)
         {
-            if (Func::ConvertToUtf8String(saveReader->thisConfig->strRepo.GetUnicodeString(items[i]->item_name)) == converted_name)
+            if (Func::ConvertToUtf8String(saveReader->thisConfig->strRepo.GetUnicodeString(item->item_name)) == converted_name)
             {
-                return items[i];
+                return item;
             }
         }
     } else // By e.g. item_wooden_spear
     {
-        for (int i = 0; i < items.size(); i++)
+        for (const auto& item : items)
         {
-            if (items[i]->item_name == name)
+            if (item->item_name == name)
             {
-                return items[i];
+                return item;
             }
         }
     }
+
+    spdlog::error("ItemRegistry failed to find item {}", name);
 }
