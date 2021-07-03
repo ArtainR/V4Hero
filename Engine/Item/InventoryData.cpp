@@ -100,7 +100,6 @@ bool InventoryData::checkItemObtained(string item_name)
 
 void InventoryData::addItem(string item_name, int count)
 {
-    cout << "Items size: " << saveReader << endl;
     if (checkItemObtained(item_name))
     {
         items[getInvID(item_name)].item_count += count;

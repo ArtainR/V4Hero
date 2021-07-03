@@ -49,6 +49,7 @@ void StringRepository::LoadLanguageFile(std::ifstream* conf, ModRegistry* modReg
 
 		for(const auto& mod : modReg->mods)
 		{
+			spdlog::debug("Adding {}'s string_map to StringRepository", mod.name);
 			stringMap.insert(mod.string_map.begin(), mod.string_map.end()); // Merge didn't wanna work, idk
 		}
     } else
@@ -59,6 +60,14 @@ void StringRepository::LoadLanguageFile(std::ifstream* conf, ModRegistry* modReg
     conf->close();
 }
 void StringRepository::LoadLanguageFiles(int langNum, ModRegistry* modReg)
+{
+
+        std::ifstream conf2("resources/lang/" + langFiles[langNum - 1] + ".json");
+		spdlog::info("Loading language file: {}", langNames[langNum - 1]);
+        LoadLanguageFile(&conf2, modReg);
+}
+
+void StringRepository::LoadLanguages()
 {
     std::ifstream conf("resources/lang/lang.json");
 
@@ -74,16 +83,13 @@ void StringRepository::LoadLanguageFiles(int langNum, ModRegistry* modReg)
 			langNames.push_back(lang["lang"]);
 			langFonts.push_back(lang["font"]);
 		}
-
-        std::ifstream conf2("resources/lang/" + langFiles[langNum - 1] + ".json");
-		spdlog::info("Loading language file: {}", langNames[langNum - 1]);
-        LoadLanguageFile(&conf2, modReg);
-    } else
-    {
-        std::ifstream conf2("resources/lang/English.json");
-        LoadLanguageFile(&conf2, modReg);
-    }
-    conf.close();
+	}
+	else
+	{
+		langFiles.push_back("English");
+		langNames.push_back("English");
+		langFonts.push_back("roboto.ttf");
+	}
 }
 
 

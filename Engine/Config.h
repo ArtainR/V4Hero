@@ -118,6 +118,7 @@ public:
     bool se_christmas = false;
     std::string fontPath = "";
     Config();
+	void init();
     void LoadConfig(V4Core* core);
     void ReloadLanguages();
     DebugOut* debugOut;

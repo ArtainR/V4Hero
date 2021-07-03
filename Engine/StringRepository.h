@@ -19,6 +19,7 @@ public:
     StringRepository();
     void LoadLanguageFiles(int langNum, ModRegistry* modReg);
     void LoadLanguageFile(std::ifstream* conf, ModRegistry* modReg);
+	void LoadLanguages();
     std::wstring GetUnicodeString(std::wstring key);
     std::wstring GetUnicodeString(std::string key);
     std::string GetString(std::wstring key);

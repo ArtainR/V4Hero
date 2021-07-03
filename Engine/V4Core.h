@@ -45,10 +45,10 @@ public:
     NewGameMenu newGameMenu;
     MainMenu mainMenu;
     Config config;
+    ModRegistry modReg;
     TipsUtil tipsUtil;
     SaveReader saveReader;
     MissionController currentController;
-    ModRegistry modReg;
     V4Core();
     void saveToDebugLog(string data);
     void changeRichPresence(string title, string bg_image, string sm_image);

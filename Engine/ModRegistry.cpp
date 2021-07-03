@@ -2,8 +2,10 @@
 #include "Item/Item.h"
 #include "V4Core.h"
 #include <algorithm>
+#include <codecvt>
 #include <filesystem>
 #include <iostream>
+#include <locale>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
@@ -25,6 +27,7 @@ std::vector<std::string> get_directores(const std::string& s) // stolen from htt
 
 ModRegistry::ModRegistry()
 {
+    
 }
 
 ModRegistry::~ModRegistry()
@@ -33,7 +36,7 @@ ModRegistry::~ModRegistry()
 
 void ModRegistry::init(Config* thisConfig)
 {
-    config = thisConfig;
+	config = thisConfig;
 
     modsPath = std::filesystem::current_path().string() + "/mods";
     spdlog::info("Mods path: {}", modsPath);
@@ -59,27 +62,43 @@ void ModRegistry::loadMods()
                     json mod_info;
                     mod_file >> mod_info;
 
-                    try
-                    {
-                        new_mod.name = mod_info["name"];
-                    } catch (const std::exception& e)
-                    {
-                        new_mod.name = "No Data";
-                    }
-                    try
-                    {
-                        new_mod.author = mod_info["author"];
-                    } catch (const std::exception& e)
-                    {
-                        new_mod.author = "No Data";
-                    }
-                    try
-                    {
-                        new_mod.version = mod_info["version"];
-                    } catch (const std::exception& e)
-                    {
-                        new_mod.version = "1.0.0";
-                    }
+					std::string name = "No Data";
+					if(auto i = mod_info.find("name"); i != mod_info.end())
+					{
+						name = mod_info["name"];
+					}
+					new_mod.name = name;
+
+					std::string author = "No Data";
+					if(auto i = mod_info.find("author"); i != mod_info.end())
+					{
+						author = mod_info["author"];
+					}
+					new_mod.author = author;
+
+					std::string version = "1.0.0";
+					if(auto i = mod_info.find("version"); i != mod_info.end())
+					{
+						version = mod_info["version"];
+					}
+					new_mod.version = version;
+
+					std::string prefix = std::string(author.begin(), std::remove_if(author.begin(), author.end(), ::isspace)) + "_" + std::string(name.begin(), std::remove_if(name.begin(), name.end(), ::isspace)) + "_";
+					if(auto i = mod_info.find("prefix"); i != mod_info.end())
+					{
+						std::string prefix2check = mod_info["prefix"]; // This has to be done, as json_prefix.empty() returns false
+						if(!prefix2check.empty())
+						{
+							prefix = prefix2check + "_";
+						}
+						else
+						{
+							spdlog::warn("Mod with empty prefix detected: {} by {}.", name, author);
+						}
+					}
+					std::transform(prefix.begin(), prefix.end(), prefix.begin(), [](unsigned char c){ return std::tolower(c); });
+					spdlog::debug("Using prefix {} for mod {} by {}", prefix, name, author);
+					new_mod.prefix = prefix;
 
 					std::vector<std::string> langs;
 					std::ifstream mod_lang_data(folder + "/lang/lang.json", std::ios::in);
@@ -97,9 +116,11 @@ void ModRegistry::loadMods()
 					if(!langs.empty())
 					{
 						std::unordered_map<std::string, std::wstring> string_map;
-						std::string desired_lang = std::string(config->GetLanguageName().begin(), config->GetLanguageName().end());
+						std::wstring lang_name = config->GetLanguageName();
+						// This only works for ASCII characters! Please don't write stuff like 日本語 in lang names :)
+						std::string desired_lang = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(lang_name);
 
-						if(auto i = find(langs.begin(), langs.end(), desired_lang); i != langs.end())
+						if(auto i = find(langs.begin(), langs.end(), desired_lang); i != langs.end()) // if mod supports language
 						{
 							std::string lang_name = langs[i - langs.begin()];
 							
@@ -112,7 +133,7 @@ void ModRegistry::loadMods()
 
 								for(auto it = strings.begin(); it != strings.end(); ++it)
 								{
-									std::string key = it.key();
+									std::string key = prefix + it.key();
 									std::string val = it.value();
 									std::wstring value = std::wstring(val.begin(), val.end());
 									string_map.insert(std::pair(key, value));
@@ -213,14 +234,14 @@ void ModRegistry::addItems(std::vector<Item*>& items)
 						std::string item_name = "item_stone";
 						if (auto i = item.find("name"); i != item.end())
 						{
-							item_name = item["name"];
+							item_name = mod.prefix + std::string(item["name"]);
 						}
 						new_item->item_name = item_name;
 
 						std::string item_desc = "desc_stone";
 						if (auto i = item.find("desc"); i != item.end())
 						{
-							item_desc = item["desc"];
+							item_desc = mod.prefix + std::string(item["desc"]);
 						}
 						new_item->item_description = item_desc;
 

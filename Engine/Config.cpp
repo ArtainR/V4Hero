@@ -2,6 +2,7 @@
 #include "DebugOut.h"
 #include "Func.h"
 #include "V4Core.h"
+#include <spdlog/spdlog.h>
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -121,9 +122,15 @@ void Config::LoadConfig(V4Core* core)
     conf2.close();
 
     /** Load lang from resources/lang/str_ENG.cfg **/
+	strRepo.LoadLanguages(); // Don't even ask, please?
+    cout << strRepo.GetString(L"language_file_loaded") << endl;
+}
+
+void Config::init()
+{
     strRepo.LoadLanguageFiles(GetInt("lang"), &thisCore->modReg);
     fontPath = "resources/fonts/" + strRepo.langFonts[GetInt("lang") - 1];
-    cout << strRepo.GetString(L"language_file_loaded") << endl;
+	spdlog::info("{}", strRepo.GetString(L"language_file_loaded"));
 }
 
 void Config::SaveConfig()

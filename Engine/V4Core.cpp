@@ -94,6 +94,10 @@ V4Core::V4Core()
     /** Load config from config.cfg **/
     config.LoadConfig(this);
 
+	modReg.init(&config); // Load mods before langs
+
+	config.init(); // Load langs
+
     /** "Alpha release" text **/
     f_font.loadFromFile(config.fontPath);
 
@@ -123,9 +127,6 @@ V4Core::V4Core()
 
     menus.push_back(&mainMenu);
     config.configDebugID = 10;
-
-    // Initialize ModRegistry (this has to be done here for later ability to enable / disable mods)
-    modReg.init(&config);
 
     // Has to happen after mod registry initializes itself
     saveReader.init(config);
