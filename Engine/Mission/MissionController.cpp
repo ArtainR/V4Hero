@@ -312,6 +312,22 @@ void MissionController::spawnEntity(int id, bool collidable, bool attackable, in
                 spawn = true;
             }
         }
+
+        ///Cache item if force drop is called
+        if (additional_data.contains("forceDropIfNotObtained"))
+        {
+            Item* itm = v4Core->saveReader.itemReg.getItemByName(additional_data["forceDropIfNotObtained"][0]);
+            PSprite ps_itm;
+
+            ps_itm.loadFromFile("resources/graphics/item/textures/" + itm->spritesheet + "/" + Func::num_padding(itm->spritesheet_id, 4) + ".png", qualitySetting, resSetting);
+            sf::Image i_itm = ps_itm.t.copyToImage();
+
+            DroppableCache tmp;
+            tmp.img = i_itm;
+            tmp.cached = true;
+
+            droppable_cache[itm->spritesheet][itm->spritesheet_id] = tmp;
+        }
     }
 
     cout << "[MissionController::spawnEntity] additional_data: " << additional_data << endl;
@@ -2443,6 +2459,7 @@ void MissionController::DoMissionEnd(sf::RenderWindow& window, float fps)
                 v4Core->mainMenu.patapolisMenu.SetTitle(3);
                 v4Core->mainMenu.patapolisMenu.camPos = v4Core->mainMenu.patapolisMenu.locations[3];
                 v4Core->mainMenu.patapolisMenu.fade_alpha = 255;
+                v4Core->mainMenu.patapolisMenu.updateStoryPoint(); ///update NPC dialogues
 
                 while (missionEndTimer.getElapsedTime().asMilliseconds() < 21000)
                 {
@@ -2542,6 +2559,7 @@ void MissionController::DoMissionEnd(sf::RenderWindow& window, float fps)
                 v4Core->mainMenu.patapolisMenu.SetTitle(3);
                 v4Core->mainMenu.patapolisMenu.camPos = v4Core->mainMenu.patapolisMenu.locations[3];
                 v4Core->mainMenu.patapolisMenu.fade_alpha = 255;
+                v4Core->mainMenu.patapolisMenu.updateStoryPoint(); ///update NPC dialogues
 
                 while (missionEndTimer.getElapsedTime().asMilliseconds() < 10000)
                 {
