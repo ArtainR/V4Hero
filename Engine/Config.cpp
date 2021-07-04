@@ -1,12 +1,8 @@
 #include "Config.h"
-#include "DebugOut.h"
 #include "Func.h"
 #include "V4Core.h"
 #include <spdlog/spdlog.h>
 #include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -15,7 +11,6 @@ using namespace std;
 Config::Config()
 {
     configDebugID = 0;
-    debugOut = new DebugOut(this);
     ///check if config file already exists
     ifstream check("config.ini");
     bool exists = check.good();
@@ -123,7 +118,7 @@ void Config::LoadConfig(V4Core* core)
 
     /** Load lang from resources/lang/str_ENG.cfg **/
 	strRepo.LoadLanguages(); // Don't even ask, please?
-    cout << strRepo.GetString(L"language_file_loaded") << endl;
+	spdlog::info("{}", strRepo.GetString(L"language_file_loaded"));
 }
 
 void Config::init()
@@ -165,8 +160,13 @@ void Config::ReloadLanguages()
     /** Load lang from resources/lang/str_ENG.cfg **/
     if (changedLang)
     {
+<<<<<<< HEAD
         strRepo.LoadLanguageFiles(GetInt("lang"), &thisCore->modReg);
         cout << strRepo.GetString(L"language_file_loaded") << endl;
+=======
+        strRepo.LoadLanguageFiles(GetInt("lang"));
+        cout << strRepo.GetString("language_file_loaded") << endl;
+>>>>>>> 19a19f06935d09686ce88b02d2f79afd8b77df50
         changedLang = false;
     }
 }
@@ -184,10 +184,10 @@ void Config::SetString(std::string key, std::string val)
 {
     configMap[key] = val;
 }
-std::wstring Config::GetLanguageName()
+std::string Config::GetLanguageName()
 {
     std::string s = strRepo.langNames[atoi(configMap["lang"].c_str()) - 1];
-    std::wstring resws;
+    std::string resws;
     resws.assign(s.begin(), s.end());
     return resws;
 }

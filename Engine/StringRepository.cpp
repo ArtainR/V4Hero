@@ -1,15 +1,8 @@
 #include "StringRepository.h"
 #include "ModRegistry.h"
-#include "DebugOut.h"
 #include "Func.h"
-#include <algorithm>
-#include <cassert>
-#include <cctype>
 #include <codecvt>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <locale>
 #include <string>
 #include <vector>
 #include <nlohmann/json.hpp>
@@ -93,43 +86,7 @@ void StringRepository::LoadLanguages()
 }
 
 
-std::wstring StringRepository::GetUnicodeString(std::wstring key)
-{
-    std::string s(key.begin(), key.end());
-
-    if (!stringMap[s].empty())
-    {
-        return stringMap[s];
-    } else
-    {
-        std::string nodata = s + "__no_data";
-        return std::wstring(nodata.begin(), nodata.end());
-    }
-}
-
-std::wstring StringRepository::GetUnicodeString(std::string key)
-{
-    if (!stringMap[key].empty())
-    {
-        return stringMap[key];
-    } else
-    {
-        std::string nodata = key + "__no_data";
-        return std::wstring(nodata.begin(), nodata.end());
-    }
-}
-
-std::string StringRepository::GetString(std::wstring key)
-{
-    std::string s(key.begin(), key.end());
-    std::wstring ws = stringMap[s];
-    std::string o(ws.begin(), ws.end());
-    return o;
-}
-
 std::string StringRepository::GetString(std::string key)
 {
-    std::wstring ws = stringMap[key];
-    std::string s(ws.begin(), ws.end());
-    return s;
+    return stringMap[key];
 }

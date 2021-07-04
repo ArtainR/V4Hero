@@ -1,6 +1,6 @@
 #ifndef STRINGREPOSITORY_H
 #define STRINGREPOSITORY_H
-#include "DebugOut.h"
+
 #include "ModRegistry.h"
 #include <SFML/Graphics.hpp>
 #include <fstream>
@@ -11,7 +11,6 @@
 class StringRepository
 {
 public:
-    std::vector<std::string> langFiles;
     std::vector<std::string> langNames;
     std::vector<std::string> langFonts;
     std::unordered_map<std::string, std::wstring> stringMap;
@@ -24,6 +23,11 @@ public:
     std::wstring GetUnicodeString(std::string key);
     std::string GetString(std::wstring key);
     std::string GetString(std::string key);
+private:
+    std::map<std::string, std::string> stringMap;
+    std::vector<std::string> langFiles;
+
+    void LoadLanguageFile(std::ifstream* conf);
 };
 
 #endif // STRINGREPOSITORY_H

@@ -1,6 +1,5 @@
 #include "SaveReader.h"
 #include "Config.h"
-#include "DebugOut.h"
 #include "Func.h"
 #include <algorithm>
 #include <cassert>
@@ -52,8 +51,6 @@ void SaveReader::init(Config& tconfig)
 void SaveReader::LoadSave()
 {
     invData.saveReader = this; // It crashes without this line. Dunno why, just that invData.saveReader ends up a nullptr
-
-    debugOut = thisConfig->debugOut;
 
     ifstream conf("resources/data/sv1.p4sv", std::ios::in);
     if (conf.good())

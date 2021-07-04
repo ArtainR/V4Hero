@@ -1,6 +1,5 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-#include "DebugOut.h"
 #include "StringRepository.h"
 #include <SFML/Graphics.hpp>
 #include <map>
@@ -121,7 +120,6 @@ public:
 	void init();
     void LoadConfig(V4Core* core);
     void ReloadLanguages();
-    DebugOut* debugOut;
     V4Core* thisCore;
 
     StringRepository strRepo;
@@ -130,7 +128,7 @@ public:
     int GetInt(std::string key);
     std::string GetString(std::string key);
     void SetString(std::string key, std::string val);
-    std::wstring GetLanguageName();
+    std::string GetLanguageName();
     void SaveConfig();
     bool keyExists(std::string key);
 };
