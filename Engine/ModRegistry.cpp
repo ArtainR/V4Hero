@@ -38,7 +38,6 @@ void ModRegistry::init(Config* thisConfig)
 {
 	config = thisConfig;
 
-    modsPath = std::filesystem::current_path().string() + "/mods";
     spdlog::info("Mods path: {}", modsPath);
 
     loadMods();
@@ -184,12 +183,27 @@ json ModRegistry::addModMissions(json worldData)
     {
         for (auto& mission : mod.worldmap_data)
         {
-            mission["mission_path"] = mod.path + "/missions/";
+            mission["mission_path"] = mod.path.append("/missions/");
             worldData.push_back(mission);
         }
     }
 
     return worldData;
+}
+
+std::filesystem::path ModRegistry::getOverwritten(std::filesystem::path path)
+{
+	for (auto& mod : mods)
+	{
+		for(auto& resource : mod.resources)
+		{
+			if(resource == path)
+			{
+				return std::filesystem::path(mod.path.string() + "/" + resource.string());
+			}
+		}
+	}
+	return path;
 }
 
 void ModRegistry::addItems(std::vector<Item*>& items)

@@ -6,6 +6,7 @@
 #include <random>
 
 #include "Config.h"
+#include "ResourceManager.h"
 #include "Graphics/Menu.h"
 #include "Menu/MainMenu.h"
 #include "Menu/NewGameMenu.h"
@@ -42,6 +43,7 @@ public:
     std::mt19937::result_type seed;
     std::mt19937 gen;
 
+	ResourceManager resourceManager = nullptr; // to shut V4Core.cpp up about "no default constructor exists" :)
     NewGameMenu newGameMenu;
     MainMenu mainMenu;
     Config config;

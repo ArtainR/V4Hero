@@ -65,14 +65,14 @@ void SaveReader::LoadSave()
         kami_name = sf::String(to_string(save_data["details"]["name"]));
         story_point = save_data["details"]["story_point"];
         locations_unlocked.clear(); // Clear the defaul from SaveReader.h
-        for (int i = 0; i < save_data["details"]["locations_unlocked"].size(); i++)
+        for (const auto& location : save_data["details"]["locations_unlocked"])
         {
-            locations_unlocked.push_back(save_data["details"]["locations_unlocked"][i]);
+            locations_unlocked.push_back(location);
         }
 
-        for (int i = 0; i < save_data["items"].size(); i++)
+        for (const auto& item : save_data["items"])
         {
-            invData.addItem(save_data["items"][i]["name"], save_data["items"][i]["count"]);
+            invData.addItem(item["name"], item["count"]);
         }
 
         if (save_data["army"][0]["rarepon"] != -1) // Is hero unlocked?
@@ -145,13 +145,13 @@ void SaveReader::LoadSave()
             ponReg.squads_available.push_back(save_data["army"][i][0]["class"]); // Save to available squads for choosing in barracks / prep
         }
 
-        for (int i = 0; i < save_data["missions"].size(); i++) // Each mission is stored as a single array so it can be handled elegantly (slightly increases file size, but shouldn't be a problem)
+        for (const auto& mission : save_data["missions"]) // Each mission is stored as a single array so it can be handled elegantly (slightly increases file size, but shouldn't be a problem)
         {
-            if (save_data["missions"][i][2]) // Is unlocked?
+            if (mission[2]) // Is unlocked?
             {
-                missions_unlocked.push_back(save_data["missions"][i][0]); // Add mission id
+                missions_unlocked.push_back(mission[0]); // Add mission id
             }
-            mission_levels.insert(pair<int, int>(save_data["missions"][i][0], save_data["missions"][i][1])); // Add mission level regardless
+            mission_levels.insert(pair<int, int>(mission[0], mission[1])); // Add mission level regardless
         }
     } else
     {

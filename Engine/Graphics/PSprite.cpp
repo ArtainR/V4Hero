@@ -1,94 +1,20 @@
 #include "PSprite.h"
 #include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <string>
+#include <spdlog/spdlog.h>
 
 PSprite::PSprite()
 {
+
 }
 
-void PSprite::loadFromFile(std::string file, int q)
+void PSprite::loadFromFile(std::filesystem::path path)
 {
-    std::string a = file.substr(0, file.find_last_of("."));
-    std::string b = file.substr(file.find_last_of("."));
-    std::string sq = "";
-
-    switch (q)
+    if (!t.loadFromFile(path))
     {
-        case 0:
-            sq = "L";
-            break;
-
-        case 1:
-            sq = "M";
-            break;
-
-        case 2:
-            sq = "H";
-            break;
-
-        case 3:
-            sq = "U";
-            break;
-    }
-
-    std::string c = a + "_" + sq + b;
-
-    qualitySetting = q;
-    resSetting = 1;
-
-    texname = c;
-
-    if (!t.loadFromFile(c))
-    {
-        std::ofstream dbg("V4Hero-errors.log", std::ios::app);
-        dbg << "Failed to load " << c;
-        dbg << "\r\n";
-        dbg.close();
-    }
-
-    t.setSmooth(true);
-    s.setTexture(t, true);
-}
-
-void PSprite::loadFromFile(std::string file, int q, int r = 1)
-{
-    std::string a = file.substr(0, file.find_last_of("."));
-    std::string b = file.substr(file.find_last_of("."));
-    std::string sq = "";
-
-    switch (q)
-    {
-        case 0:
-            sq = "L";
-            break;
-
-        case 1:
-            sq = "M";
-            break;
-
-        case 2:
-            sq = "H";
-            break;
-
-        case 3:
-            sq = "U";
-            break;
-    }
-
-    std::string c = a + "_" + sq + b;
-
-    qualitySetting = q;
-    resSetting = r;
- 
-    texname = c;
-
-    if (!t.loadFromFile(c))
-    {
-        std::ofstream dbg("V4Hero-errors.log", std::ios::app);
-        dbg << "Failed to load " << c;
-        dbg << "\r\n";
-        dbg.close();
+		spdlog::error("Failed to load {}", path);
     }
 
     t.setSmooth(true);

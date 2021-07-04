@@ -98,6 +98,8 @@ V4Core::V4Core()
 
 	config.init(); // Load langs
 
+	resourceManager = ResourceManager(this);
+
     /** "Alpha release" text **/
     f_font.loadFromFile(config.fontPath);
 
@@ -219,13 +221,14 @@ void V4Core::loadingThread()
     box_1.setSize(sf::Vector2f(1280 * resRatioX, 80 * resRatioY));
     box_2.setSize(sf::Vector2f(1280 * resRatioX, 514 * resRatioY));
 
-    PSprite tip_logo;
-    tip_logo.loadFromFile("resources/graphics/ui/tips/tip-logo.png", config.GetInt("textureQuality"), 1);
+	resourceManager.loadSprite("tip_logo", "resources/graphics/ui/tips/tip-logo.png");
 
-    PSprite loading_head, loading_eye1, loading_eye2;
-    loading_head.loadFromFile("resources/graphics/ui/tips/loading_head.png", config.GetInt("textureQuality"), 1);
-    loading_eye1.loadFromFile("resources/graphics/ui/tips/loading_eye.png", config.GetInt("textureQuality"), 1);
-    loading_eye2.loadFromFile("resources/graphics/ui/tips/loading_eye.png", config.GetInt("textureQuality"), 1);
+	resourceManager.loadSprite("loading_head", "resources/graphics/ui/tips/loading_head.png");
+	resourceManager.loadSprite("loading_eye1", "resources/graphics/ui/tips/loading_eye.png");
+	resourceManager.loadSprite("loading_eye2", "resources/graphics/ui/tips/loading_eye.png");
+
+	PSprite loading_eye1 = resourceManager.getSprite("loading_eye1");
+	PSprite loading_eye2 = resourceManager.getSprite("loading_eye2");
 
     loading_eye1.setOrigin(loading_eye1.getLocalBounds().width * 0.85, loading_eye1.getLocalBounds().height * 0.85);
     loading_eye2.setOrigin(loading_eye2.getLocalBounds().width * 0.85, loading_eye2.getLocalBounds().height * 0.85);
@@ -292,8 +295,8 @@ void V4Core::loadingThread()
         window.draw(box_1);
         window.draw(box_2);
 
-        tip_logo.setPosition(1060, 20);
-        tip_logo.draw(window);
+        resourceManager.getSprite("tip_logo").setPosition(1060, 20);
+        resourceManager.getSprite("tip_logo").draw(window);
 
         tipsUtil.t_icons[tipIcon].setOrigin(tipsUtil.t_icons[tipIcon].getLocalBounds().width / 2, tipsUtil.t_icons[tipIcon].getLocalBounds().height / 2);
         tipsUtil.t_icons[tipIcon].setPosition(1040, 380);
@@ -317,17 +320,17 @@ void V4Core::loadingThread()
             t_nowLoading.setPosition(722 + 230 + 256, 658 + 26);
             t_nowLoading.draw(window);
 
-            loading_head.setPosition(t_nowLoading.getPosition().x - t_nowLoading.getLocalBounds().width - 46, t_nowLoading.getPosition().y - 28);
-            loading_eye1.setPosition(t_nowLoading.getPosition().x - t_nowLoading.getLocalBounds().width + 19 - 46, t_nowLoading.getPosition().y + 43 - 28);
-            loading_eye1.setRotation(loading_eye1.angle + (5.0 / maxFps));
-            loading_head.draw(window);
-            loading_eye1.draw(window);
+            resourceManager.getSprite("loading_head").setPosition(t_nowLoading.getPosition().x - t_nowLoading.getLocalBounds().width - 46, t_nowLoading.getPosition().y - 28);
+            resourceManager.getSprite("loading_eye1").setPosition(t_nowLoading.getPosition().x - t_nowLoading.getLocalBounds().width + 19 - 46, t_nowLoading.getPosition().y + 43 - 28);
+            resourceManager.getSprite("loading_eye1").setRotation(resourceManager.getSprite("loading_eye1").angle + (5.0 / maxFps));
+            resourceManager.getSprite("loading_head").draw(window);
+            resourceManager.getSprite("loading_eye1").draw(window);
 
-            loading_head.setPosition(t_nowLoading.getPosition().x + 12, t_nowLoading.getPosition().y - 28);
-            loading_eye2.setPosition(t_nowLoading.getPosition().x + 19 + 12, t_nowLoading.getPosition().y + 43 - 28);
-            loading_eye2.setRotation(loading_eye2.angle - (5.0 / maxFps));
-            loading_head.draw(window);
-            loading_eye2.draw(window);
+            resourceManager.getSprite("loading_head").setPosition(t_nowLoading.getPosition().x + 12, t_nowLoading.getPosition().y - 28);
+            resourceManager.getSprite("loading_eye2").setPosition(t_nowLoading.getPosition().x + 19 + 12, t_nowLoading.getPosition().y + 43 - 28);
+            resourceManager.getSprite("loading_eye2").setRotation(resourceManager.getSprite("loading_eye2").angle - (5.0 / maxFps));
+            resourceManager.getSprite("loading_head").draw(window);
+            resourceManager.getSprite("loading_eye2").draw(window);
         }
 
         window.setView(lastView);

@@ -1,6 +1,7 @@
 #ifndef PSPRITE_H
 #define PSPRITE_H
 
+#include <filesystem>
 #include <SFML/Graphics.hpp>
 
 ///Class for automatic sprite resizing based on the current window resolution and quality options
@@ -22,8 +23,7 @@ public:
     float angle = 0;
     bool exported = false;
     PSprite();
-    void loadFromFile(std::string file, int q);
-    void loadFromFile(std::string file, int q, int r);
+    void loadFromFile(std::filesystem::path file);
     void setRepeated(bool r);
     void setTextureRect(sf::IntRect rect);
     void setOrigin(float x, float y);
